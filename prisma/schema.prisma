@@ -1,0 +1,71 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  category    String // Panini, Menu, Bevande, Extra
+  priceCents  Int
+  description String?
+  allergens   String?
+  isAvailable Boolean  @default(true)
+  stock       Int? // Optional stock tracking
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  OrderItems  OrderItem[]
+}
+
+model ShopOrder {
+  id           String      @id @default(uuid())
+  createdAt    DateTime    @default(now())
+  status       String // PAID, IN_PREPARATION, READY, DELIVERED, CANCELLED
+  pickupCode   String // 4-digit code
+  studentName  String
+  studentClass String
+  note         String?
+  totalCents   Int
+  items        OrderItem[]
+  printJob     PrintJob?
+
+  @@map("Order")
+}
+
+model OrderItem {
+  id                 String  @id @default(uuid())
+  orderId            String
+  order              ShopOrder @relation(fields: [orderId], references: [id])
+  productId          String
+  product            Product   @relation(fields: [productId], references: [id])
+  nameSnapshot       String
+  priceCentsSnapshot Int
+  qty                Int
+}
+
+model Settings {
+  id              Int     @id @default(1)
+  cutoffTime      String  @default("10:00")
+  orderingEnabled Boolean @default(true)
+}
+
+model PrintJob {
+  id          String   @id @default(uuid())
+  orderId     String   @unique
+  order       ShopOrder @relation(fields: [orderId], references: [id])
+  createdAt   DateTime @default(now())
+  status      String   @default("QUEUED") // QUEUED, PRINTED
+  payloadText String
+}
