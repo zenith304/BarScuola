@@ -11,17 +11,12 @@ export default function NewProductPage() {
 
     async function clientAction(formData: FormData) {
         await createProduct({
-            name: formData.get('name'),
-            category: formData.get('category'),
-            priceCents: formData.get('price'), // Input will be in cents? No, usually user enters euros. Ideally convert.
-            // requirement says "price (integer cents)". 
-            // I will ask user to input Cents for simplicity or parse float * 100.
-            // Let's expect input in Cents to strictly follow prompt "integer cents" or robustly handle it.
-            // Prompt said "price (integer cents)". The UI should probably allow 3.50.
-            // Use form logic to parse.
-            description: formData.get('description'),
-            allergens: formData.get('allergens'),
-            isAvailable: formData.get('isAvailable'),
+            name: formData.get('name') as string,
+            category: formData.get('category') as string,
+            priceCents: formData.get('price') as string,
+            description: formData.get('description') as string,
+            allergens: formData.get('allergens') as string,
+            isAvailable: formData.get('isAvailable') as string,
         });
         router.push('/admin/products');
     }
