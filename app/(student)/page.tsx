@@ -22,36 +22,36 @@ export default async function MenuPage() {
   return (
     <div className="space-y-8">
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Menu Bar</h1>
+        <h1 className="text-3xl font-bold text-black-900">Menu Bar</h1>
         <p className="text-gray-500">Ordina entro le {settings?.cutoffTime}</p>
       </header>
 
       {categories.map((cat) => (
         <section key={cat} id={cat} className="scroll-mt-20">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">{cat}</h2>
+          <h2 className="text-xl font-bold text-black-800 mb-4 border-b pb-2">{cat}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {menu[cat].map((product: Product) => (
               <Card key={product.id} className="p-4 flex flex-col justify-between h-full">
                 <div>
                   <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-semibold text-gray-900">{product.name}</h3>
+                    <h3 className="text-lg font-semibold">{product.name}</h3>
                     <span className="font-bold text-blue-600">
                       {(product.priceCents / 100).toFixed(2)}€
                     </span>
                   </div>
                   {product.description && (
-                    <p className="text-gray-600 text-sm mt-1">{product.description}</p>
+                    <p className="text-black-600 text-sm mt-1">{product.description}</p>
                   )}
                   {product.allergens && (
                     <p className="text-xs text-amber-600 mt-2">Allergeni: {product.allergens}</p>
                   )}
                 </div>
-                <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="mt-4 pt-4 border-t border-black-100">
                   <AddToCartButton product={product} />
                 </div>
               </Card>
             ))}
-            {menu[cat].length === 0 && <p className="text-gray-400 italic">Nessun prodotto disponibile.</p>}
+            {menu[cat].length === 0 && <p className="text-black-400 italic">Nessun prodotto disponibile.</p>}
           </div>
         </section>
       ))}

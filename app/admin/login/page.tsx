@@ -28,14 +28,12 @@ export default function AdminLoginPage() {
                         label="Email"
                         required
                         autoComplete="email"
-                        className="text-gray-900"
-                        placeholder="[EMAIL_ADDRESS]"
+                        placeholder="admin@schoolbar.local"
                     />
                     <Input
                         name="password"
                         type="password"
                         label="Password"
-                        className="text-gray-900"
                         required
                         autoComplete="current-password"
                     />
