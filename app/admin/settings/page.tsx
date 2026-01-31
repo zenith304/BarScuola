@@ -17,14 +17,15 @@ export default async function SettingsPage() {
 
     return (
         <div className="max-w-xl mx-auto space-y-6">
-            <h1 className="text-3xl font-bold">Impostazioni Bar</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Impostazioni Bar</h1>
             <Card className="p-6">
                 <form action={saveSettings} className="space-y-6">
                     <div className="space-y-1">
-                        <label className="font-medium">Orario di Chiusura Ordini (Cutoff)</label>
+                        <label className="font-medium text-gray-900">Orario di Chiusura Ordini (Cutoff)</label>
                         <p className="text-sm text-gray-500">I ragazzi non potranno ordinare dopo questo orario.</p>
                         <Input
                             name="cutoffTime"
+                            className='text-gray-900'
                             type="time"
                             defaultValue={settings?.cutoffTime || '10:00'}
                             required
@@ -40,7 +41,7 @@ export default async function SettingsPage() {
                             className="h-5 w-5 text-blue-600 rounded"
                         />
                         <div>
-                            <label htmlFor="enabled" className="font-medium">Abilita Ordinazioni</label>
+                            <label htmlFor="enabled" className="font-medium text-gray-900">Abilita Ordinazioni</label>
                             <p className="text-xs text-gray-500">Se disabilitato, nessuno potrà ordinare indipendentemente dall'orario.</p>
                         </div>
                     </div>

@@ -23,14 +23,14 @@ export default function NewProductPage() {
 
     return (
         <div className="max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Nuovo Prodotto</h1>
+            <h1 className="text-2xl font-bold mb-6 text-gray-900">Nuovo Prodotto</h1>
             <Card className="p-6">
-                <form action={clientAction} className="space-y-4">
+                <form action={clientAction} className="space-y-4 text-gray-900">
                     <Input name="name" label="Nome" required />
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-                        <select name="category" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+                        <label className="block text-sm font-medium text-gray-900 mb-1">Categoria</label>
+                        <select name="category" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900">
                             <option value="Panini">Panini</option>
                             <option value="Menu">Menu</option>
                             <option value="Bevande">Bevande</option>

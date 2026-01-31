@@ -10,7 +10,7 @@ export default async function AdminProductsPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold">Gestione Prodotti</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Gestione Prodotti</h1>
                 <Link href="/admin/products/new">
                     <Button>+ Nuovo Prodotto</Button>
                 </Link>
@@ -18,7 +18,7 @@ export default async function AdminProductsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((product: Product) => (
-                    <Card key={product.id} className="p-4 flex flex-col justify-between">
+                    <Card key={product.id} className="p-4 flex flex-col justify-between text-gray-900">
                         <div>
                             <div className="flex justify-between items-start">
                                 <h3 className="font-bold text-lg">{product.name}</h3>
