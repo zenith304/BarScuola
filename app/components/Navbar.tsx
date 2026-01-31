@@ -8,7 +8,7 @@ export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     <div className="flex">
-                        <Link href={type === 'admin' ? '/admin/dashboard' : '/'} className="flex-shrink-0 flex items-center font-bold text-xl text-blue-600">
+                        <Link href={type === 'admin' ? '/admin/dashboard' : '/'} className="flex-0 flex items-center font-bold text-xl text-blue-600">
                             Bar Scuola
                             {type === 'admin' && <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">ADMIN</span>}
                         </Link>
