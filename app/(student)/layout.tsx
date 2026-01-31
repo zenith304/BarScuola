@@ -2,7 +2,6 @@ import { Navbar } from '@/app/components/Navbar';
 import { CartProvider } from '@/app/context/CartContext';
 import StudentProviders from "./providers";
 
-
 export default function StudentLayout({
   children,
 }: {
@@ -19,4 +18,3 @@ export default function StudentLayout({
     </StudentProviders>
   );
 }
-
