@@ -148,6 +148,14 @@ export async function createOrder(input: CreateOrderInput) {
             }
         });
 
+        // Increment Lifetime Revenue
+        await tx.settings.update({
+            where: { id: 1 },
+            data: {
+                lifetimeRevenueCents: { increment: totalCents }
+            }
+        });
+
         return newOrder;
     });
 

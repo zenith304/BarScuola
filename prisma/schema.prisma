@@ -56,9 +56,10 @@ model OrderItem {
 }
 
 model Settings {
-  id              Int     @id @default(1)
-  cutoffTime      String  @default("10:00")
-  orderingEnabled Boolean @default(true)
+  id                   Int     @id @default(1)
+  cutoffTime           String  @default("10:00")
+  orderingEnabled      Boolean @default(true)
+  lifetimeRevenueCents Int     @default(0)
 }
 
 model PrintJob {

@@ -4,6 +4,8 @@ import { Card } from '@/app/components/ui/Card';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { ShopOrder, OrderItem, PrintJob } from '@prisma/client';
+import { DeleteAllOrdersButton } from '@/app/components/admin/DeleteAllOrdersButton';
+
 
 type DashboardOrder = ShopOrder & { items: OrderItem[] };
 
@@ -11,10 +13,16 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     // Await searchParams as required in Next.js 15
     const { status, q } = await searchParams;
 
-    // Fetch Orders
+    // Fetch Orders and Revenue
     let orders: DashboardOrder[] = [];
+    let dailyRevenueCents = 0;
+    let lifetimeRevenueCents = 0;
+
     try {
-        orders = await getDashboardData(status, q);
+        const data = await getDashboardData(status, q);
+        orders = data.orders;
+        dailyRevenueCents = data.dailyRevenueCents;
+        lifetimeRevenueCents = data.lifetimeRevenueCents;
     } catch (e) {
         redirect('/admin/login');
     }
@@ -27,6 +35,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-gray-900">Dashboard Ordini</h1>
                 <div className="flex space-x-2">
+                    <DeleteAllOrdersButton />
                     <form action={async () => { 'use server';  /* handled by Link or form */ }}>
                         {/* Refresh button just reloads page or revalidates */}
                         <Button variant="secondary" formAction={async () => { 'use server'; revalidatePath('/admin/dashboard') }}>
@@ -34,6 +43,18 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         </Button>
                     </form>
                 </div>
+
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Card className="p-4 bg-blue-50 border-blue-100">
+                    <div className="text-sm font-medium text-blue-600 uppercase tracking-wider">Incasso Odierno</div>
+                    <div className="text-2xl font-bold text-blue-900">{(dailyRevenueCents / 100).toFixed(2)}€</div>
+                </Card>
+                <Card className="p-4 bg-green-50 border-green-100">
+                    <div className="text-sm font-medium text-green-600 uppercase tracking-wider">Incasso Totale</div>
+                    <div className="text-2xl font-bold text-green-900">{(lifetimeRevenueCents / 100).toFixed(2)}€</div>
+                </Card>
             </div>
 
             {/* Filters */}

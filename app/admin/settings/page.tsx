@@ -3,6 +3,8 @@ import { getSettings } from '@/app/actions/shop';
 import { Button } from '@/app/components/ui/Button';
 import { Input } from '@/app/components/ui/Input';
 import { Card } from '@/app/components/ui/Card';
+import { ResetRevenueButton } from '@/app/components/admin/ResetRevenueButton';
+
 
 export default async function SettingsPage() {
     const settings = await getSettings();
@@ -55,6 +57,16 @@ export default async function SettingsPage() {
             <div className="bg-yellow-50 p-4 rounded text-sm text-yellow-800 border border-yellow-200">
                 Nota: L'orario del server è utilizzato per il controllo. Assicurati che il server sia configurato su Europe/Roma.
             </div>
+
+            <Card className="p-6 border-red-100 bg-red-50">
+                <h3 className="text-lg font-bold text-red-900 mb-2">Manutenzione Dati</h3>
+                <p className="text-sm text-red-700 mb-4">
+                    Queste azioni sono irreversibili. Prestare attenzione.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                    <ResetRevenueButton />
+                </div>
+            </Card>
         </div>
     );
 }

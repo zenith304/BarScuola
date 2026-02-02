@@ -43,13 +43,34 @@ export async function getDashboardData(statusFilter?: string, searchCode?: strin
         where.pickupCode = searchCode;
     }
 
-    const orders = await prisma.shopOrder.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-        include: { items: true }
+    const [orders, settings] = await prisma.$transaction([
+        prisma.shopOrder.findMany({
+            where,
+            orderBy: { createdAt: 'desc' },
+            include: { items: true }
+        }),
+        prisma.settings.findUnique({ where: { id: 1 } })
+    ]);
+
+    // Calculate Daily Revenue (sum of non-cancelled orders from today)
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const dailyOrders = await prisma.shopOrder.findMany({
+        where: {
+            createdAt: { gte: startOfDay },
+            status: { not: 'CANCELLED' }
+        },
+        select: { totalCents: true }
     });
 
-    return orders;
+    const dailyRevenueCents = dailyOrders.reduce((sum, o) => sum + o.totalCents, 0);
+
+    return {
+        orders,
+        dailyRevenueCents,
+        lifetimeRevenueCents: settings?.lifetimeRevenueCents || 0
+    };
 }
 
 export async function updateOrderStatus(orderId: string, newStatus: string) {
@@ -158,4 +179,31 @@ export async function markJobPrinted(id: string) {
         data: { status: 'PRINTED' }
     });
     revalidatePath('/admin/dashboard'); // Maybe dedicated print page?
+}
+
+export async function deleteAllOrders() {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    // Delete in order to avoid foreign key constraints
+    await prisma.$transaction([
+        prisma.orderItem.deleteMany(),
+        prisma.printJob.deleteMany(),
+        prisma.shopOrder.deleteMany(),
+    ]);
+
+    revalidatePath('/admin/dashboard');
+}
+
+export async function resetLifetimeRevenue() {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    await prisma.settings.update({
+        where: { id: 1 },
+        data: { lifetimeRevenueCents: 0 }
+    });
+
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/admin/settings');
 }
