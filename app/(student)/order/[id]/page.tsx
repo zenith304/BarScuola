@@ -34,22 +34,22 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
             </Card>
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-left">
-                <h3 className="font-bold text-lg mb-4">Riepilogo Ordine</h3>
+                <h3 className="font-bold text-lg mb-4 text-gray-900">Riepilogo Ordine</h3>
                 <p className="text-sm text-gray-600 mb-2">Studente: <span className="font-medium text-gray-900">{order.studentName} ({order.studentClass})</span></p>
                 <div className="space-y-2 border-t pt-4">
                     {order.items.map((item: OrderItem) => (
-                        <div key={item.id} className="flex justify-between text-sm">
+                        <div key={item.id} className="flex justify-between text-sm text-gray-900">
                             <span>{item.qty}x {item.nameSnapshot}</span>
                             <span>{(item.priceCentsSnapshot * item.qty / 100).toFixed(2)}€</span>
                         </div>
                     ))}
                 </div>
-                <div className="flex justify-between font-bold text-lg mt-4 pt-4 border-t">
+                <div className="flex justify-between font-bold text-lg mt-4 pt-4 border-t text-gray-900">
                     <span>Totale</span>
                     <span>{(order.totalCents / 100).toFixed(2)}€</span>
                 </div>
                 {order.note && (
-                    <div className="mt-4 pt-4 border-t">
+                    <div className="mt-4 pt-4 border-t text-gray-900">
                         <span className="text-xs font-bold text-gray-500 uppercase">Note</span>
                         <p className="text-sm text-gray-700 bg-yellow-50 p-2 rounded mt-1">{order.note}</p>
                     </div>

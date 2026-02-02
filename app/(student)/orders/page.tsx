@@ -29,11 +29,11 @@ export default function MyOrdersPage() {
         loadOrders();
     }, []);
 
-    if (loading) return <div className="text-center py-10">Caricamento...</div>;
+    if (loading) return <div className="text-center py-10 text-gray-900">Caricamento...</div>;
 
     if (orders.length === 0) {
         return (
-            <div className="text-center py-10">
+            <div className="text-center py-10 text-gray-900 ">
                 <h2 className="text-xl font-medium text-gray-900">Nessun ordine recente</h2>
                 <p className="text-gray-500 mb-4">I tuoi ordini appariranno qui.</p>
                 <Link href="/">
@@ -45,15 +45,15 @@ export default function MyOrdersPage() {
 
     return (
         <div className="max-w-3xl mx-auto space-y-6">
-            <h1 className="text-2xl font-bold">I miei ordini recenti</h1>
+            <h1 className="text-2xl font-bold text-gray-900">I miei ordini recenti</h1>
 
             {orders.map((order) => (
                 <Card key={order.id} className="p-4 border-l-4 border-l-blue-500">
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleString('it-IT')}</p>
-                            <h3 className="font-bold text-lg mt-1">Codice Ritiro: <span className="text-xl">{order.pickupCode}</span></h3>
-                            <p className="text-sm font-medium mt-1">Stato: <span className={`
+                            <h3 className="font-bold text-lg mt-1 text-gray-900">Codice Ritiro: <span className="text-xl text-gray-900">{order.pickupCode}</span></h3>
+                            <p className="text-sm font-medium mt-1 text-gray-900">Stato: <span className={`
                  px-2 py-0.5 rounded text-xs uppercase
                  ${order.status === 'PAID' ? 'bg-green-100 text-green-800' : ''}
                  ${order.status === 'IN_PREPARATION' ? 'bg-yellow-100 text-yellow-800' : ''}
@@ -62,7 +62,7 @@ export default function MyOrdersPage() {
                `}>{order.status}</span></p>
                         </div>
                         <div className="text-right">
-                            <p className="font-bold">{(order.totalCents / 100).toFixed(2)}€</p>
+                            <p className="font-bold text-gray-900">{(order.totalCents / 100).toFixed(2)}€</p>
                             <Link href={`/order/${order.id}`} className="text-sm text-blue-600 hover:underline">Dettagli</Link>
                         </div>
                     </div>

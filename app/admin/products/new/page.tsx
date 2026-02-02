@@ -23,9 +23,9 @@ export default function NewProductPage() {
 
     return (
         <div className="max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Nuovo Prodotto</h1>
+            <h1 className="text-2xl font-bold mb-6 text-gray-900">Nuovo Prodotto</h1>
             <Card className="p-6">
-                <form action={clientAction} className="space-y-4">
+                <form action={clientAction} className="space-y-4 text-gray-900">
                     <Input name="name" label="Nome" required />
 
                     <div>

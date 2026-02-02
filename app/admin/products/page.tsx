@@ -10,7 +10,7 @@ export default async function AdminProductsPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold">Gestione Prodotti</h1>
+                <h1 className="text-3xl font-bold text-gray-900">Gestione Prodotti</h1>
                 <Link href="/admin/products/new">
                     <Button>+ Nuovo Prodotto</Button>
                 </Link>
@@ -21,13 +21,13 @@ export default async function AdminProductsPage() {
                     <Card key={product.id} className="p-4 flex flex-col justify-between">
                         <div>
                             <div className="flex justify-between items-start">
-                                <h3 className="font-bold text-lg">{product.name}</h3>
+                                <h3 className="font-bold text-lg text-gray-900">{product.name}</h3>
                                 <span className={`px-2 py-0.5 text-xs rounded uppercase ${product.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                     {product.isAvailable ? 'Attivo' : 'Non disp.'}
                                 </span>
                             </div>
                             <p className="text-sm text-gray-500">{product.category}</p>
-                            <p className="font-bold mt-1">{(product.priceCents / 100).toFixed(2)}€</p>
+                            <p className="font-bold mt-1 text-gray-900">{(product.priceCents / 100).toFixed(2)}€</p>
                             {product.description && <p className="text-xs text-gray-600 mt-2 line-clamp-2">{product.description}</p>}
                         </div>
 

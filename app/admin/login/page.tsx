@@ -28,7 +28,8 @@ export default function AdminLoginPage() {
                         label="Email"
                         required
                         autoComplete="email"
-                        placeholder="admin@schoolbar.local"
+                        placeholder="email@domain.com"
+                        className="text-gray-900"
                     />
                     <Input
                         name="password"
@@ -36,6 +37,7 @@ export default function AdminLoginPage() {
                         label="Password"
                         required
                         autoComplete="current-password"
+                        className="text-gray-900"
                     />
 
                     {error && <div className="text-red-500 text-sm text-center">{error}</div>}
