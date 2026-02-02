@@ -69,7 +69,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <Button type="submit" size="sm">Cerca</Button>
                 </form>
                 <div className="flex gap-2 overflow-x-auto">
-                    {['ALL', 'PAID', 'IN_PREPARATION', 'READY', 'DELIVERED', 'CANCELLED'].map(s => (
+                    {['ALL', 'PAID', 'READY', 'DELIVERED', 'CANCELLED'].map(s => (
                         <a
                             key={s}
                             href={`/admin/dashboard?status=${s}`}
@@ -119,11 +119,6 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                             <div className="flex flex-wrap gap-2">
                                 {order.status === 'PAID' && (
-                                    <form action={updateOrderStatus.bind(null, order.id, 'IN_PREPARATION')}>
-                                        <Button size="sm" className="bg-yellow-500 hover:bg-yellow-600">In Prep</Button>
-                                    </form>
-                                )}
-                                {order.status === 'IN_PREPARATION' && (
                                     <form action={updateOrderStatus.bind(null, order.id, 'READY')}>
                                         <Button size="sm" className="bg-blue-500 hover:bg-blue-600">Pronto</Button>
                                     </form>
