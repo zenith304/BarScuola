@@ -48,8 +48,8 @@ model OrderItem {
   id                 String  @id @default(uuid())
   orderId            String
   order              ShopOrder @relation(fields: [orderId], references: [id])
-  productId          String
-  product            Product   @relation(fields: [productId], references: [id])
+  productId          String?
+  product            Product?   @relation(fields: [productId], references: [id], onDelete: SetNull)
   nameSnapshot       String
   priceCentsSnapshot Int
   qty                Int

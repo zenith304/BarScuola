@@ -127,15 +127,21 @@ export async function updateProduct(id: string, data: { name: string; category: 
     revalidatePath('/admin/products');
 }
 
-export async function deleteProduct(id: string) {
+export async function deleteProduct(id: string, formData: FormData) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
 
-    await prisma.product.delete({ where: { id } });
-    revalidatePath('/admin/products');
+    try {
+        await prisma.product.delete({ where: { id } });
+        revalidatePath('/admin/products');
+    } catch (e) {
+        console.error('Delete product error:', e);
+        // We return void or a Promise<void> as expected by form action
+        // Errors could be handled via state if needed, but for now we just log
+    }
 }
 
-export async function toggleProductAvailability(id: string, current: boolean) {
+export async function toggleProductAvailability(id: string, current: boolean, formData: FormData) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
 
