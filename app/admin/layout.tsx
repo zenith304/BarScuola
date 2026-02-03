@@ -1,5 +1,6 @@
 
 import { Navbar } from '@/app/components/Navbar';
+import { Analytics } from "@vercel/analytics/next"
 
 export default function AdminLayout({
     children,
@@ -12,6 +13,7 @@ export default function AdminLayout({
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {children}
             </main>
+            <Analytics />
         </div>
     );
 }
