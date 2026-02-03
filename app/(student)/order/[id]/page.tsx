@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function OrderConfirmationPage({ params }: { params: { id: string } }) {
     // Use await params
-    const { id } = params;
+    const { id } = await params;
 
     const order = await prisma.shopOrder.findUnique({
         where: { id },
