@@ -20,7 +20,7 @@ export type CreateOrderInput = {
 };
 
 // --- Helpers ---
-const CATEGORIES = ['Panini', 'Menu', 'Bevande', 'Extra'];
+const CATEGORIES = ['Panini Semplici', 'Panini Composti', 'Menu', 'Altro'];
 
 // --- Actions ---
 
@@ -40,8 +40,8 @@ export async function getMenu() {
             menu[p.category].push(p);
         } else {
             // Fallback for unknown categories
-            menu['Extra'] = menu['Extra'] || [];
-            menu['Extra'].push(p);
+            menu['Altro'] = menu['Altro'] || [];
+            menu['Altro'].push(p);
         }
     });
 
