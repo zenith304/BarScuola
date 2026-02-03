@@ -16,6 +16,7 @@ export default function NewProductPage() {
         await createProduct({
             name: formData.get('name') as string,
             category: formData.get('category') as string,
+            topic: formData.get('topic') as string,
             priceCents: formData.get('price') as string,
             description: formData.get('description') as string,
             allergens: formData.get('allergens') as string,
@@ -62,6 +63,16 @@ export default function NewProductPage() {
                         {category === 'Menu' && (
                             <p className="text-xs text-blue-600 mt-1">ℹ️ Una opzione "Bevanda" sarà aggiunta automaticamente con le bevande disponibili.</p>
                         )}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Topic (Opzionale)</label>
+                        <input
+                            name="topic"
+                            placeholder="es. Salse, Bevande, Extra"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Categorizza il prodotto per tipo (es. Salse, Bevande)</p>
                     </div>
 
                     <Input name="price" type="number" label="Prezzo (in CENTESIMI, es. 350 per 3.50€)" required />

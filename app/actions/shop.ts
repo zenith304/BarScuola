@@ -73,7 +73,7 @@ export async function createOrder(input: CreateOrderInput) {
 
     // 2. Calculate Total & Validate Stock (optional)
     let totalCents = 0;
-    const orderItemsData: { productId: string; nameSnapshot: string; priceCentsSnapshot: number; qty: number; selectedOptions?: string | null }[] = [];
+    const orderItemsData: { productId: string; nameSnapshot: string; priceCentsSnapshot: number; qty: number; topicSnapshot?: string | null; selectedOptions?: string | null }[] = [];
 
     for (const item of input.cart) {
         const product = await prisma.product.findUnique({ where: { id: item.productId } });
@@ -86,6 +86,7 @@ export async function createOrder(input: CreateOrderInput) {
             nameSnapshot: product.name,
             priceCentsSnapshot: product.priceCents,
             qty: item.qty,
+            topicSnapshot: product.topic || null,
             selectedOptions: item.selectedOptions || null,
         });
     }
@@ -136,8 +137,15 @@ export async function createOrder(input: CreateOrderInput) {
         const dateStr = now.toLocaleDateString('it-IT', { hour: '2-digit', minute: '2-digit' });
         let printText = `ORDINE BAR\n${dateStr}\n\nCODICE RITIRO: ${pickupCode}\n\n`;
         printText += `${input.studentName} (${input.studentClass})\n`;
-        newOrder.items.forEach((i: { qty: number; nameSnapshot: string }) => {
-            printText += `${i.qty} x ${i.nameSnapshot}\n`;
+        newOrder.items.forEach((i: { qty: number; nameSnapshot: string; topicSnapshot?: string | null; selectedOptions?: string | null }) => {
+            let itemLine = `${i.qty} x ${i.nameSnapshot}`;
+            if (i.topicSnapshot) {
+                itemLine += ` [${i.topicSnapshot}]`;
+            }
+            if (i.selectedOptions) {
+                itemLine += ` (${i.selectedOptions})`;
+            }
+            printText += `${itemLine}\n`;
         });
         if (input.note) printText += `NOTE: ${input.note}\n`;
         printText += `\nTOTALE: ${(totalCents / 100).toFixed(2)}€\n`;

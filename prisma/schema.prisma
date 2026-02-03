@@ -19,6 +19,7 @@ model Product {
   id          String   @id @default(uuid())
   name        String
   category    String // Panini, Menu, Bevande, Extra
+  topic       String? // e.g., "Salse", "Bevande", "Extra"
   priceCents  Int
   description String?
   allergens   String?
@@ -63,6 +64,7 @@ model OrderItem {
   nameSnapshot       String
   priceCentsSnapshot Int
   qty                Int
+  topicSnapshot      String? // Snapshot of product topic
   selectedOptions    String? // e.g., "Salse: Ketchup, Maionese"
 }
 

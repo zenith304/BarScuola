@@ -105,6 +105,7 @@ export async function getProduct(id: string) {
 export async function createProduct(data: {
     name: string;
     category: string;
+    topic?: string;
     priceCents: string | number;
     description?: string;
     allergens?: string;
@@ -135,6 +136,7 @@ export async function createProduct(data: {
         data: {
             name: data.name,
             category: data.category,
+            topic: data.topic || null,
             priceCents: parseInt(String(data.priceCents)),
             description: data.description,
             allergens: data.allergens,
@@ -151,6 +153,7 @@ export async function createProduct(data: {
 export async function updateProduct(id: string, data: {
     name: string;
     category: string;
+    topic?: string;
     priceCents: string | number;
     description?: string;
     allergens?: string;
@@ -185,6 +188,7 @@ export async function updateProduct(id: string, data: {
         data: {
             name: data.name,
             category: data.category,
+            topic: data.topic || null,
             priceCents: parseInt(String(data.priceCents)),
             description: data.description,
             allergens: data.allergens,

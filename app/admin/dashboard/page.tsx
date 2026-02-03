@@ -108,8 +108,18 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                             <div className="bg-gray-50 p-3 rounded mb-4 text-sm">
                                 {order.items.map((item: OrderItem) => (
-                                    <div key={item.id} className="flex justify-between border-b last:border-0 border-gray-200 py-1 text-gray-900">
-                                        <span>{item.qty}x {item.nameSnapshot}</span>
+                                    <div key={item.id} className="flex justify-between items-center border-b last:border-0 border-gray-200 py-1 text-gray-900">
+                                        <div className="flex items-center gap-2">
+                                            <span>{item.qty}x {item.nameSnapshot}</span>
+                                            {item.topicSnapshot && (
+                                                <span className="px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                    {item.topicSnapshot}
+                                                </span>
+                                            )}
+                                            {item.selectedOptions && (
+                                                <span className="text-xs text-gray-500">({item.selectedOptions})</span>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                                 {order.note && (
