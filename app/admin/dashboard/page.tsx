@@ -136,7 +136,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             </div>
                         </Card>
                     ))}
-                    {orders.length === 0 && <p className="text-gray-900 italic">Nessun ordine trovato.</p>}
+                    {orders.length === 0 && <p className="text-gray-900 italic">Nessun ordine trovato</p>}
                 </div>
 
                 {/* Print Queue Side Panel */}
