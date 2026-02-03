@@ -27,6 +27,16 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   OrderItems  OrderItem[]
+  options     ProductOption[]
+}
+
+model ProductOption {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String  // e.g., "Salse"
+  choices   String  // Comma separated, e.g., "Ketchup, Maionese, Senape"
+  allowMulti Boolean @default(true)
 }
 
 model ShopOrder {
@@ -53,6 +63,7 @@ model OrderItem {
   nameSnapshot       String
   priceCentsSnapshot Int
   qty                Int
+  selectedOptions    String? // e.g., "Salse: Ketchup, Maionese"
 }
 
 model Settings {
