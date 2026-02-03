@@ -9,6 +9,7 @@ import { redirect } from 'next/navigation';
 export type CartItem = {
     productId: string;
     qty: number;
+    selectedOptions?: string; // e.g., "Salse: Ketchup, Maionese"
 };
 
 export type CreateOrderInput = {
@@ -27,13 +28,14 @@ export async function getMenu() {
     const products = await prisma.product.findMany({
         where: { isAvailable: true },
         orderBy: { category: 'asc' },
+        include: { options: true }
     });
 
     // Group by category
-    const menu: Record<string, Product[]> = {};
+    const menu: Record<string, any[]> = {};
     CATEGORIES.forEach(cat => menu[cat] = []);
 
-    products.forEach((p: Product) => {
+    products.forEach((p: any) => {
         if (menu[p.category]) {
             menu[p.category].push(p);
         } else {
@@ -71,7 +73,7 @@ export async function createOrder(input: CreateOrderInput) {
 
     // 2. Calculate Total & Validate Stock (optional)
     let totalCents = 0;
-    const orderItemsData: { productId: string; nameSnapshot: string; priceCentsSnapshot: number; qty: number }[] = [];
+    const orderItemsData: { productId: string; nameSnapshot: string; priceCentsSnapshot: number; qty: number; selectedOptions?: string | null }[] = [];
 
     for (const item of input.cart) {
         const product = await prisma.product.findUnique({ where: { id: item.productId } });
@@ -84,6 +86,7 @@ export async function createOrder(input: CreateOrderInput) {
             nameSnapshot: product.name,
             priceCentsSnapshot: product.priceCents,
             qty: item.qty,
+            selectedOptions: item.selectedOptions || null,
         });
     }
 

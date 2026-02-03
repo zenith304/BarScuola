@@ -7,13 +7,14 @@ export type CartItem = {
     name: string;
     priceCents: number;
     qty: number;
+    selectedOptions?: string; // e.g., "Salse: Ketchup, Maionese"
 };
 
 type CartContextType = {
     items: CartItem[];
-    addToCart: (product: any) => void;
-    removeFromCart: (productId: string) => void;
-    updateQty: (productId: string, delta: number) => void;
+    addToCart: (product: any, selectedOptions?: string) => void;
+    removeFromCart: (productId: string, selectedOptions?: string) => void;
+    updateQty: (productId: string, delta: number, selectedOptions?: string) => void;
     clearCart: () => void;
     totalCents: number;
 };
@@ -40,23 +41,39 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('bar-scuola-cart', JSON.stringify(items));
     }, [items]);
 
-    const addToCart = (product: any) => {
+    const addToCart = (product: any, selectedOptions?: string) => {
         setItems(prev => {
-            const existing = prev.find(i => i.productId === product.id);
+            // Find item with same product AND same options
+            const existing = prev.find(i =>
+                i.productId === product.id &&
+                (i.selectedOptions || '') === (selectedOptions || '')
+            );
             if (existing) {
-                return prev.map(i => i.productId === product.id ? { ...i, qty: i.qty + 1 } : i);
+                return prev.map(i =>
+                    (i.productId === product.id && (i.selectedOptions || '') === (selectedOptions || ''))
+                        ? { ...i, qty: i.qty + 1 }
+                        : i
+                );
             }
-            return [...prev, { productId: product.id, name: product.name, priceCents: product.priceCents, qty: 1 }];
+            return [...prev, {
+                productId: product.id,
+                name: product.name,
+                priceCents: product.priceCents,
+                qty: 1,
+                selectedOptions
+            }];
         });
     };
 
-    const removeFromCart = (productId: string) => {
-        setItems(prev => prev.filter(i => i.productId !== productId));
+    const removeFromCart = (productId: string, selectedOptions?: string) => {
+        setItems(prev => prev.filter(i =>
+            !(i.productId === productId && (i.selectedOptions || '') === (selectedOptions || ''))
+        ));
     };
 
-    const updateQty = (productId: string, delta: number) => {
+    const updateQty = (productId: string, delta: number, selectedOptions?: string) => {
         setItems(prev => prev.map(i => {
-            if (i.productId === productId) {
+            if (i.productId === productId && (i.selectedOptions || '') === (selectedOptions || '')) {
                 const newQty = Math.max(1, i.qty + delta);
                 return { ...i, qty: newQty };
             }

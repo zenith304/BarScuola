@@ -96,12 +96,40 @@ export async function getProduct(id: string) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
 
-    return await prisma.product.findUnique({ where: { id } });
+    return await prisma.product.findUnique({
+        where: { id },
+        include: { options: true }
+    });
 }
 
-export async function createProduct(data: { name: string; category: string; priceCents: string | number; description?: string; allergens?: string; isAvailable?: string | boolean }) {
+export async function createProduct(data: {
+    name: string;
+    category: string;
+    priceCents: string | number;
+    description?: string;
+    allergens?: string;
+    isAvailable?: string | boolean;
+    options?: Array<{ name: string; choices: string; allowMulti: boolean }>;
+}) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
+
+    // Auto-add drinks option for Menu category
+    let optionsToCreate = data.options || [];
+    if (data.category === 'Menu') {
+        const drinks = await prisma.product.findMany({
+            where: { category: 'Bevande', isAvailable: true },
+            select: { name: true }
+        });
+        const drinkNames = drinks.map(d => d.name).join(', ');
+        if (drinkNames) {
+            optionsToCreate.push({
+                name: 'Bevanda',
+                choices: drinkNames,
+                allowMulti: false
+            });
+        }
+    }
 
     await prisma.product.create({
         data: {
@@ -111,15 +139,46 @@ export async function createProduct(data: { name: string; category: string; pric
             description: data.description,
             allergens: data.allergens,
             isAvailable: data.isAvailable === 'on' || data.isAvailable === true,
+            options: {
+                create: optionsToCreate
+            }
         }
     });
     revalidatePath('/admin/products');
     revalidatePath('/');
 }
 
-export async function updateProduct(id: string, data: { name: string; category: string; priceCents: string | number; description?: string; allergens?: string; isAvailable?: string | boolean }) {
+export async function updateProduct(id: string, data: {
+    name: string;
+    category: string;
+    priceCents: string | number;
+    description?: string;
+    allergens?: string;
+    isAvailable?: string | boolean;
+    options?: Array<{ name: string; choices: string; allowMulti: boolean }>;
+}) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
+
+    // Delete existing options and recreate
+    await prisma.productOption.deleteMany({ where: { productId: id } });
+
+    // Auto-add drinks option for Menu category
+    let optionsToCreate = data.options || [];
+    if (data.category === 'Menu') {
+        const drinks = await prisma.product.findMany({
+            where: { category: 'Bevande', isAvailable: true },
+            select: { name: true }
+        });
+        const drinkNames = drinks.map(d => d.name).join(', ');
+        if (drinkNames) {
+            optionsToCreate.push({
+                name: 'Bevanda',
+                choices: drinkNames,
+                allowMulti: false
+            });
+        }
+    }
 
     await prisma.product.update({
         where: { id },
@@ -130,6 +189,9 @@ export async function updateProduct(id: string, data: { name: string; category: 
             description: data.description,
             allergens: data.allergens,
             isAvailable: data.isAvailable === 'on' || data.isAvailable === true,
+            options: {
+                create: optionsToCreate
+            }
         }
     });
     revalidatePath('/admin/products');

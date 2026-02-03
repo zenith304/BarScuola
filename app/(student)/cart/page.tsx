@@ -69,25 +69,28 @@ export default function CartPage() {
 
             <div className="space-y-4">
                 {items.map((item) => (
-                    <Card key={item.productId} className="p-4 flex items-center justify-between">
+                    <Card key={`${item.productId}-${item.selectedOptions || 'none'}`} className="p-4 flex items-center justify-between">
                         <div>
                             <h3 className="font-medium text-gray-900">{item.name}</h3>
+                            {item.selectedOptions && (
+                                <p className="text-xs text-gray-600 mt-1">{item.selectedOptions}</p>
+                            )}
                             <p className="text-sm text-gray-900">{(item.priceCents / 100).toFixed(2)}€ x {item.qty}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                             <button
                                 className="px-2 py-1 bg-gray-300 rounded text-gray-900"
-                                onClick={() => updateQty(item.productId, -1)}
+                                onClick={() => updateQty(item.productId, -1, item.selectedOptions)}
                                 disabled={item.qty <= 1}
                             >-</button>
                             <span className="w-8 text-center text-gray-900">{item.qty}</span>
                             <button
                                 className="px-2 py-1 bg-gray-300 rounded text-gray-900"
-                                onClick={() => updateQty(item.productId, 1)}
+                                onClick={() => updateQty(item.productId, 1, item.selectedOptions)}
                             >+</button>
                             <button
                                 className="ml-4 text-red-500 hover:text-red-700"
-                                onClick={() => removeFromCart(item.productId)}
+                                onClick={() => removeFromCart(item.productId, item.selectedOptions)}
                             >Remove</button>
                         </div>
                     </Card>
