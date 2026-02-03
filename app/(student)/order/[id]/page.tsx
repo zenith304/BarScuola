@@ -5,9 +5,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { OrderItem } from '@prisma/client';
 
+export const dynamic = "force-dynamic";
+
 export default async function OrderConfirmationPage({ params }: { params: { id: string } }) {
     // Use await params
-    const { id } = await params;
+    const { id } = params;
 
     const order = await prisma.shopOrder.findUnique({
         where: { id },
