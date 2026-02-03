@@ -114,6 +114,7 @@ export async function createProduct(data: { name: string; category: string; pric
         }
     });
     revalidatePath('/admin/products');
+    revalidatePath('/');
 }
 
 export async function updateProduct(id: string, data: { name: string; category: string; priceCents: string | number; description?: string; allergens?: string; isAvailable?: string | boolean }) {
@@ -132,6 +133,7 @@ export async function updateProduct(id: string, data: { name: string; category: 
         }
     });
     revalidatePath('/admin/products');
+    revalidatePath('/');
 }
 
 export async function deleteProduct(id: string, formData: FormData) {
@@ -141,6 +143,7 @@ export async function deleteProduct(id: string, formData: FormData) {
     try {
         await prisma.product.delete({ where: { id } });
         revalidatePath('/admin/products');
+        revalidatePath('/');
     } catch (e) {
         console.error('Delete product error:', e);
         // We return void or a Promise<void> as expected by form action
@@ -157,6 +160,7 @@ export async function toggleProductAvailability(id: string, current: boolean, fo
         data: { isAvailable: !current }
     });
     revalidatePath('/admin/products');
+    revalidatePath('/');
 }
 
 // --- Settings ---
