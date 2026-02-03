@@ -92,6 +92,13 @@ export async function getAllProducts() {
     return await prisma.product.findMany({ orderBy: { category: 'asc' } });
 }
 
+export async function getProduct(id: string) {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    return await prisma.product.findUnique({ where: { id } });
+}
+
 export async function createProduct(data: { name: string; category: string; priceCents: string | number; description?: string; allergens?: string; isAvailable?: string | boolean }) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
