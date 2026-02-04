@@ -95,10 +95,10 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                             onChange={(e) => setCategory(e.target.value)}
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
                         >
-                            <option value="Panini">Panini</option>
+                            <option value="Panini Semplici">Panini Semplici</option>
+                            <option value="Panini Composti">Panini Composti</option>
                             <option value="Menu">Menu</option>
-                            <option value="Bevande">Bevande</option>
-                            <option value="Extra">Extra</option>
+                            <option value="Altro">Altro</option>
                         </select>
                         {category === 'Menu' && (
                             <p className="text-xs text-blue-600 mt-1">ℹ️ Una opzione "Bevanda" sarà aggiunta automaticamente con le bevande disponibili.</p>
