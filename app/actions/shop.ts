@@ -168,7 +168,7 @@ export async function createOrder(input: CreateOrderInput) {
         throw new Error('Errore nella creazione del pagamento Stripe.');
     }
 
-    return { url: session.url };
+    return { url: session.url, orderId: order.id };
 }
 
 export async function getMyOrders(limit = 10) {

@@ -33,7 +33,7 @@ export default function CartPage() {
         setError('');
 
         try {
-            const order = await createOrder({
+            const { url, orderId } = await createOrder({
                 studentName,
                 studentClass,
                 note,
@@ -43,10 +43,15 @@ export default function CartPage() {
             clearCart();
             // Store Order ID in local storage for "My Orders"
             const savedOrders = JSON.parse(localStorage.getItem('bar-scuola-orders') || '[]');
-            savedOrders.push(order.id);
+            savedOrders.push(orderId);
             localStorage.setItem('bar-scuola-orders', JSON.stringify(savedOrders));
 
-            router.push(`/order/${order.id}`);
+            // Redirect to Stripe Checkout
+            if (url) {
+                window.location.href = url;
+            } else {
+                throw new Error('Url di pagamento non ricevuto');
+            }
         } catch (err: any) {
             setError(err.message || 'Si è verificato un errore');
         } finally {
