@@ -4,6 +4,8 @@ import { Button } from '@/app/components/ui/Button';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { OrderItem } from '@prisma/client';
+import { LiveClock } from '@/app/components/LiveClock';
+import { InfinityBar } from '@/app/components/InfinityBar';
 
 export const dynamic = "force-dynamic";
 
@@ -29,11 +31,20 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
             <h1 className="text-3xl font-bold text-gray-900">Ordine Confermato!</h1>
             <p className="text-gray-600">Il tuo ordine è stato ricevuto e pagato.</p>
 
-            <Card className="p-8 border-2 border-blue-500 bg-blue-50">
+            <Card className="p-8 border-2 border-blue-500 bg-blue-50 relative overflow-hidden">
                 <h2 className="text-sm font-semibold text-blue-600 uppercase tracking-wide">Codice Ritiro</h2>
                 <div className="text-6xl font-black text-gray-900 my-4 tracking-widest">{order.pickupCode}</div>
-                <p className="text-sm text-gray-500">Mostra questo codice al banco per ritirare.</p>
+                <p className="text-sm text-gray-500 mb-6">Mostra questo codice al banco per ritirare.</p>
+
+                <div className="mb-4">
+                    <LiveClock />
+                </div>
+
+                <div className="w-full max-w-md mx-auto">
+                    <InfinityBar />
+                </div>
             </Card>
+
 
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-left">
                 <h3 className="font-bold text-lg mb-4 text-gray-900">Riepilogo Ordine</h3>

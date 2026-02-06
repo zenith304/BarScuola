@@ -4,6 +4,7 @@ import { CheckCircle, Home, Mail } from 'lucide-react'
 import Link from 'next/link'
 
 import { stripe } from "@/lib/stripe";
+import { prisma } from '@/lib/prisma';
 
 export default async function Success({ searchParams }) {
   const { session_id } = await searchParams
@@ -11,18 +12,25 @@ export default async function Success({ searchParams }) {
   if (!session_id)
     throw new Error('Please provide a valid session_id (`cs_test_...`)')
 
-  const {
-    status,
-    customer_details: { email: customerEmail }
-  } = await stripe.checkout.sessions.retrieve(session_id, {
+  const session = await stripe.checkout.sessions.retrieve(session_id, {
     expand: ['line_items', 'payment_intent']
   })
+
+  const { status, customer_details: { email: customerEmail }, metadata } = session;
 
   if (status === 'open') {
     return redirect('/')
   }
 
   if (status === 'complete') {
+    // Update order status if orderId is present
+    if (metadata?.orderId) {
+      await prisma.shopOrder.update({
+        where: { id: metadata.orderId },
+        data: { status: 'PAID' }
+      });
+    }
+
     return (
       <main className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-neutral-100">
@@ -49,7 +57,7 @@ export default async function Success({ searchParams }) {
           </div>
 
           <Link
-            href="/"
+            href="https://bar-itisrossi.vercel.app"
             className="w-full bg-neutral-900 text-white font-semibold py-3 px-6 rounded-xl hover:bg-neutral-800 transition-colors duration-200 flex items-center justify-center gap-2"
           >
             <Home className="w-4 h-4" />

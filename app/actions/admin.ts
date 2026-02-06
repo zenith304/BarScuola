@@ -35,10 +35,14 @@ export async function getDashboardData(statusFilter?: string, searchCode?: strin
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
 
-    const where: { status?: string; pickupCode?: string } = {};
+    const where: { status?: string | { not: string }; pickupCode?: string } = {};
     if (statusFilter && statusFilter !== 'ALL') {
         where.status = statusFilter;
+    } else {
+        // Default: Show everything EXCEPT pending payment orders
+        where.status = { not: 'PENDING_PAYMENT' };
     }
+
     if (searchCode) {
         where.pickupCode = searchCode;
     }

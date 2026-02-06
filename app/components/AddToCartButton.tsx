@@ -34,17 +34,8 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
         setShowModal(false);
     }
 
-    if (inCart && !hasOptions) {
-        return (
-            <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-green-600">Added ({inCart.qty})</span>
-                <Button size="sm" variant="secondary" onClick={handleAddClick}>+</Button>
-            </div>
-        )
-    }
-
     return (
-        <>
+        <div className="w-full space-y-2">
             <Button
                 className="w-full"
                 onClick={handleAddClick}
@@ -52,6 +43,15 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
             >
                 {product.isAvailable ? 'Aggiungi al carrello' : 'Non disponibile'}
             </Button>
+
+            {inCart && (
+                <div className="text-center">
+                    <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded inline-block">
+                        ✓ Aggiunto al carrello {hasOptions ? '' : `(${inCart.qty})`}
+                    </span>
+                </div>
+            )}
+
             {showModal && (
                 <ProductOptionsModal
                     productName={product.name}
@@ -60,6 +60,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
                     onCancel={() => setShowModal(false)}
                 />
             )}
-        </>
+        </div>
     );
 }
+
