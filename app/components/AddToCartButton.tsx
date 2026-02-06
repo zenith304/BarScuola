@@ -11,7 +11,7 @@ interface AddToCartButtonProps {
 }
 
 export function AddToCartButton({ product }: AddToCartButtonProps) {
-    const { addToCart, items } = useCart();
+    const { addToCart, updateQty, items, removeFromCart } = useCart();
     const [showModal, setShowModal] = useState(false);
     const inCart = items.find(i => i.productId === product.id);
 
@@ -36,20 +36,44 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
 
     return (
         <div className="w-full space-y-2">
-            <Button
-                className="w-full"
-                onClick={handleAddClick}
-                disabled={!product.isAvailable}
-            >
-                {product.isAvailable ? 'Aggiungi al carrello' : 'Non disponibile'}
-            </Button>
-
-            {inCart && (
-                <div className="text-center">
-                    <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded inline-block">
-                        ✓ Aggiunto al carrello {hasOptions ? '' : `(${inCart.qty})`}
-                    </span>
+            {inCart && !hasOptions ? (
+                <div className="flex items-center justify-between bg-green-50 rounded-md p-1 border border-green-200">
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-green-700 hover:bg-green-100 hover:text-green-900"
+                        onClick={() => updateQty(product.id, -1)}
+                    >
+                        -
+                    </Button>
+                    <span className="font-bold text-green-900 w-8 text-center">{inCart.qty}</span>
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0 text-green-700 hover:bg-green-100 hover:text-green-900"
+                        onClick={() => addToCart(product)}
+                    >
+                        +
+                    </Button>
                 </div>
+            ) : (
+                <>
+                    <Button
+                        className="w-full"
+                        onClick={handleAddClick}
+                        disabled={!product.isAvailable}
+                    >
+                        {product.isAvailable ? 'Aggiungi al carrello' : 'Non disponibile'}
+                    </Button>
+
+                    {inCart && hasOptions && (
+                        <div className="text-center">
+                            <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded inline-block">
+                                ✓ Aggiunto ({inCart.qty})
+                            </span>
+                        </div>
+                    )}
+                </>
             )}
 
             {showModal && (

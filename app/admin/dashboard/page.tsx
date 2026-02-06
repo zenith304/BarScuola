@@ -117,7 +117,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                                 </span>
                                             )}
                                             {item.selectedOptions && (
-                                                <span className="text-xs text-gray-500">({item.selectedOptions})</span>
+                                                <span className="text-sm font-bold text-gray-900 block mt-1">
+                                                    + {item.selectedOptions}
+                                                </span>
                                             )}
                                         </div>
                                     </div>

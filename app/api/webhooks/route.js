@@ -62,7 +62,7 @@ export async function POST(req) {
                 itemLine += ` [${i.topicSnapshot}]`;
               }
               if (i.selectedOptions) {
-                itemLine += ` (${i.selectedOptions})`;
+                itemLine += `\n   + ${i.selectedOptions}`;
               }
               printText += `${itemLine}\n`;
             });
