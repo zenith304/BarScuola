@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 
-import { stripe } from '../../../../Downloads/stripe-sample-code (2)/lib/stripe'
+import { stripe } from "@/lib/stripe";
+
 
 export async function POST(req) {
   let event
