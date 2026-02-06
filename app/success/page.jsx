@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 import { stripe } from "@/lib/stripe";
 import { prisma } from '@/lib/prisma';
+import { finalizeOrder } from '@/app/actions/shop';
 
 export default async function Success({ searchParams }) {
   const { session_id } = await searchParams
@@ -24,11 +25,9 @@ export default async function Success({ searchParams }) {
 
   if (status === 'complete') {
     // Update order status if orderId is present
+    // Verify and Finalize Order (Status + PrintJob)
     if (metadata?.orderId) {
-      await prisma.shopOrder.update({
-        where: { id: metadata.orderId },
-        data: { status: 'PAID' }
-      });
+      await finalizeOrder(metadata.orderId);
     }
 
     return (

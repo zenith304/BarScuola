@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 
 import { stripe } from "@/lib/stripe";
-import { prisma } from '@/lib/prisma'; // Import prisma
+import { prisma } from '@/lib/prisma';
+import { finalizeOrder } from '@/app/actions/shop';
 
 export async function POST(req) {
   let event
@@ -43,51 +44,11 @@ export async function POST(req) {
               break;
             }
 
-            // Update Order to PAID
-            const updatedOrder = await prisma.shopOrder.update({
-              where: { id: orderId },
-              data: { status: 'PAID' },
-              include: { items: true }
-            });
+            // Update Order and Create PrintJob via shared helper
+            // We use the helper to ensure consistent logic with the Success page
+            await finalizeOrder(orderId);
 
-            // Generate Print Text
-            // Re-implementing the print text generation here since we removed it from action
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('it-IT', { hour: '2-digit', minute: '2-digit' });
-            let printText = `ORDINE BAR\n${dateStr}\n\nCODICE RITIRO: ${updatedOrder.pickupCode}\n\n`;
-            printText += `${updatedOrder.studentName} (${updatedOrder.studentClass})\n`;
-            updatedOrder.items.forEach((i) => {
-              let itemLine = `${i.qty} x ${i.nameSnapshot}`;
-              if (i.topicSnapshot) {
-                itemLine += ` [${i.topicSnapshot}]`;
-              }
-              if (i.selectedOptions) {
-                itemLine += `\n   + ${i.selectedOptions}`;
-              }
-              printText += `${itemLine}\n`;
-            });
-            if (updatedOrder.note) printText += `NOTE: ${updatedOrder.note}\n`;
-            printText += `\nTOTALE: ${(updatedOrder.totalCents / 100).toFixed(2)}€\n`;
-            printText += `\n--------------------------------\n`;
-
-            // Create PrintJob
-            await prisma.printJob.create({
-              data: {
-                orderId: updatedOrder.id,
-                payloadText: printText,
-                status: 'QUEUED'
-              }
-            });
-
-            // Increment Revenue
-            await prisma.settings.update({
-              where: { id: 1 },
-              data: {
-                lifetimeRevenueCents: { increment: updatedOrder.totalCents }
-              }
-            });
-
-            console.log(`Order ${orderId} finalized and sent to print queue.`);
+            console.log(`Order ${orderId} process triggered via webhook.`);
           }
           break
         default:

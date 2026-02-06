@@ -63,7 +63,11 @@ export default function MyOrdersPage() {
                         </div>
                         <div className="text-right">
                             <p className="font-bold text-gray-900">{(order.totalCents / 100).toFixed(2)}€</p>
-                            <Link href={`/order/${order.id}`} className="text-sm text-blue-600 hover:underline">Dettagli</Link>
+                            {order.status === 'PAID' ? (
+                                <Link href={`/order/${order.id}`} className="text-sm text-blue-600 hover:underline">Dettagli</Link>
+                            ) : (
+                                <Link href={`https://bar-itisrossi.vercel.app/success?orderId=${order.id}`} className="text-sm text-blue-600 hover:underline">Riprova a pagare</Link>
+                            )}
                         </div>
                     </div>
                 </Card>
