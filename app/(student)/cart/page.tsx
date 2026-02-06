@@ -37,7 +37,7 @@ export default function CartPage() {
                 studentName,
                 studentClass,
                 note,
-                cart: items.map(i => ({ productId: i.productId, qty: i.qty }))
+                cart: items.map(i => ({ productId: i.productId, qty: i.qty, selectedOptions: i.selectedOptions }))
             });
 
             clearCart();

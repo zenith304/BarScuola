@@ -61,7 +61,7 @@ export default async function Success({ searchParams }) {
             className="w-full bg-neutral-900 text-white font-semibold py-3 px-6 rounded-xl hover:bg-neutral-800 transition-colors duration-200 flex items-center justify-center gap-2"
           >
             <Home className="w-4 h-4" />
-            Return to Home
+            Torna al Menu
           </Link>
         </div>
       </main>
