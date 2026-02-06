@@ -36,13 +36,13 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
 
     return (
         <div className="w-full space-y-2">
-            {inCart && !hasOptions ? (
+            {(inCart && (!hasOptions || items.filter(i => i.productId === product.id).length === 1)) ? (
                 <div className="flex items-center justify-between bg-green-50 rounded-md p-1 border border-green-200">
                     <Button
                         size="sm"
                         variant="ghost"
                         className="h-8 w-8 p-0 text-green-700 hover:bg-green-100 hover:text-green-900"
-                        onClick={() => updateQty(product.id, -1)}
+                        onClick={() => updateQty(product.id, -1, inCart.selectedOptions)}
                     >
                         -
                     </Button>
@@ -51,7 +51,17 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
                         size="sm"
                         variant="ghost"
                         className="h-8 w-8 p-0 text-green-700 hover:bg-green-100 hover:text-green-900"
-                        onClick={() => addToCart(product)}
+                        onClick={() => {
+                            if (hasOptions) {
+                                // For options, we can't just "add" without confirming options. 
+                                // But since we are in "single variant mode", maybe we assume same options?
+                                // Safer: Trigger modal again? Or simply increment if user wants SAME thing?
+                                // User asked for "+", usually means "Same Thing".
+                                updateQty(product.id, 1, inCart.selectedOptions);
+                            } else {
+                                addToCart(product);
+                            }
+                        }}
                     >
                         +
                     </Button>

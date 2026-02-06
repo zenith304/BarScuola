@@ -142,8 +142,8 @@ export default function CartPage() {
                     <Button type="submit" className="w-full text-lg py-3" isLoading={isSubmitting}>
                         ORDINA (Paga Ora)
                     </Button>
-                    <p className="text-xs text-center text-black-500">
-                        Cliccando Ordina, confermi il pagamento (simulato) e l'ordine verrà inviato.
+                    <p className="text-xs text-center text-black-500 gray-500">
+                        Cliccando Ordina, confermi il pagamento e l'ordine verrà inviato.
                     </p>
                 </form>
             </Card>

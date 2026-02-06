@@ -66,7 +66,20 @@ export default function MyOrdersPage() {
                             {order.status === 'PAID' ? (
                                 <Link href={`/order/${order.id}`} className="text-sm text-blue-600 hover:underline">Dettagli</Link>
                             ) : (
-                                <Link href={`https://bar-itisrossi.vercel.app/success?orderId=${order.id}`} className="text-sm text-blue-600 hover:underline">Riprova a pagare</Link>
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            const { retryPayment } = await import('@/app/actions/shop');
+                                            const url = await retryPayment(order.id);
+                                            window.location.href = url;
+                                        } catch (e) {
+                                            alert('Errore nel riprovare il pagamento');
+                                        }
+                                    }}
+                                    className="text-sm text-blue-600 hover:underline bg-transparent border-0 cursor-pointer p-0"
+                                >
+                                    Riprova a pagare
+                                </button>
                             )}
                         </div>
                     </div>

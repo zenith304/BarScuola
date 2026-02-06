@@ -252,3 +252,47 @@ export async function finalizeOrder(orderId: string) {
         // Don't throw to avoid crashing the webhook/page, just log
     }
 }
+
+export async function retryPayment(orderId: string) {
+    // 1. Fetch Order
+    const order = await prisma.shopOrder.findUnique({
+        where: { id: orderId },
+        include: { items: true }
+    });
+
+    if (!order) throw new Error('Ordine non trovato');
+    if (order.status === 'PAID') throw new Error('Ordine già pagato');
+
+    // 2. Create Stripe Session (Re-use logic)
+    const line_items = order.items.map((item: any) => ({
+        price_data: {
+            currency: 'eur',
+            product_data: {
+                name: item.nameSnapshot,
+                description: item.selectedOptions ? `${item.selectedOptions}` : undefined,
+            },
+            unit_amount: item.priceCentsSnapshot,
+        },
+        quantity: item.qty,
+    }));
+
+    if (!process.env.NEXT_PUBLIC_APP_URL) {
+        throw new Error('NEXT_PUBLIC_APP_URL not set');
+    }
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items,
+        mode: 'payment',
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
+        metadata: {
+            orderId: order.id,
+        },
+        client_reference_id: order.id,
+    });
+
+    if (!session.url) throw new Error('Errore Stripe');
+
+    return session.url;
+}
