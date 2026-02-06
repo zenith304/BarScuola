@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# remote
-=======
 # School Bar Pre-order System (MVP)
 
 A Next.js 15 + Prisma + SQLite mobile-first web application for school bar pre-ordering.

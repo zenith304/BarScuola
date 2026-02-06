@@ -64,7 +64,7 @@ export async function getDashboardData(statusFilter?: string, searchCode?: strin
         select: { totalCents: true }
     });
 
-    const dailyRevenueCents = dailyOrders.reduce((sum, o) => sum + o.totalCents, 0);
+    const dailyRevenueCents = dailyOrders.reduce((sum: any, o: { totalCents: any; }) => sum + o.totalCents, 0);
 
     return {
         orders,
@@ -122,7 +122,7 @@ export async function createProduct(data: {
             where: { category: 'Bevande', isAvailable: true },
             select: { name: true }
         });
-        const drinkNames = drinks.map(d => d.name).join(', ');
+        const drinkNames = drinks.map((d: { name: any; }) => d.name).join(', ');
         if (drinkNames) {
             optionsToCreate.push({
                 name: 'Bevanda',
@@ -173,7 +173,7 @@ export async function updateProduct(id: string, data: {
             where: { category: 'Bevande', isAvailable: true },
             select: { name: true }
         });
-        const drinkNames = drinks.map(d => d.name).join(', ');
+        const drinkNames = drinks.map((d: { name: any; }) => d.name).join(', ');
         if (drinkNames) {
             optionsToCreate.push({
                 name: 'Bevanda',
