@@ -1,9 +1,9 @@
 'use server';
 
 import { prisma } from '@/lib/prisma';
-import { Product } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { stripe } from "@/lib/stripe";
 
 // --- Types ---
 export type CartItem = {
@@ -116,61 +116,59 @@ export async function createOrder(input: CreateOrderInput) {
 
     if (!unique) throw new Error('Impossibile generare codice univoco. Riprova.');
 
-    // 4. Create Order & PrintJob Transaction
-    const order = await prisma.$transaction(async (tx) => {
-        const newOrder = await tx.shopOrder.create({
-            data: {
-                studentName: input.studentName,
-                studentClass: input.studentClass,
-                note: input.note,
-                status: 'PAID', // Simulate payment
-                pickupCode,
-                totalCents,
-                items: {
-                    create: orderItemsData
-                }
-            },
-            include: { items: true }
-        });
-
-        // Create Print Payload
-        const dateStr = now.toLocaleDateString('it-IT', { hour: '2-digit', minute: '2-digit' });
-        let printText = `ORDINE BAR\n${dateStr}\n\nCODICE RITIRO: ${pickupCode}\n\n`;
-        printText += `${input.studentName} (${input.studentClass})\n`;
-        newOrder.items.forEach((i: { qty: number; nameSnapshot: string; topicSnapshot?: string | null; selectedOptions?: string | null }) => {
-            let itemLine = `${i.qty} x ${i.nameSnapshot}`;
-            if (i.topicSnapshot) {
-                itemLine += ` [${i.topicSnapshot}]`;
+    // 4. Create Order (Status: PENDING_PAYMENT)
+    const order = await prisma.shopOrder.create({
+        data: {
+            studentName: input.studentName,
+            studentClass: input.studentClass,
+            note: input.note,
+            status: 'PENDING_PAYMENT',
+            pickupCode,
+            totalCents,
+            items: {
+                create: orderItemsData
             }
-            if (i.selectedOptions) {
-                itemLine += ` (${i.selectedOptions})`;
-            }
-            printText += `${itemLine}\n`;
-        });
-        if (input.note) printText += `NOTE: ${input.note}\n`;
-        printText += `\nTOTALE: ${(totalCents / 100).toFixed(2)}€\n`;
-        printText += `\n--------------------------------\n`;
-
-        await tx.printJob.create({
-            data: {
-                orderId: newOrder.id,
-                payloadText: printText,
-                status: 'QUEUED'
-            }
-        });
-
-        // Increment Lifetime Revenue
-        await tx.settings.update({
-            where: { id: 1 },
-            data: {
-                lifetimeRevenueCents: { increment: totalCents }
-            }
-        });
-
-        return newOrder;
+        },
+        include: { items: true }
     });
 
-    return order;
+    // 5. Create Stripe Checkout Session
+    // We need to pass the orderId to the webhook via metadata or client_reference_id
+    // We also need line items for Stripe (optional but good for Receipt)
+    // For simplicity, we can just do a total amount or map items. Mapping is better.
+
+    const line_items = order.items.map((item: any) => ({
+        price_data: {
+            currency: 'eur',
+            product_data: {
+                name: item.nameSnapshot,
+                description: item.selectedOptions ? `${item.selectedOptions}` : undefined,
+            },
+            unit_amount: item.priceCentsSnapshot,
+        },
+        quantity: item.qty,
+    }));
+
+    // Add a small fee or ensure min amount if needed? Stripe has min limits. 
+    // Assuming totalCents is > 0.
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items,
+        mode: 'payment',
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
+        metadata: {
+            orderId: order.id,
+        },
+        client_reference_id: order.id,
+    });
+
+    if (!session.url) {
+        throw new Error('Errore nella creazione del pagamento Stripe.');
+    }
+
+    return { url: session.url };
 }
 
 export async function getMyOrders(limit = 10) {
