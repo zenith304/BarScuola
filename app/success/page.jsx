@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
+import { Stripe } from 'stripe'
+import { CheckCircle, Home, Mail } from 'lucide-react'
+import Link from 'next/link'
 
 import { stripe } from "@/lib/stripe";
-
 
 export default async function Success({ searchParams }) {
   const { session_id } = await searchParams
@@ -22,13 +24,39 @@ export default async function Success({ searchParams }) {
 
   if (status === 'complete') {
     return (
-      <section id="success">
-        <p>
-          We appreciate your business! A confirmation email will be sent to{' '}
-          {customerEmail}. If you have any questions, please email{' '}
-        </p>
-        <a href="mailto:orders@example.com">orders@example.com</a>.
-      </section>
+      <main className="min-h-screen bg-neutral-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-neutral-100">
+          <div className="flex justify-center mb-6">
+            <div className="bg-green-100 p-3 rounded-full">
+              <CheckCircle className="w-12 h-12 text-green-600" />
+            </div>
+          </div>
+
+          <h1 className="text-2xl font-bold text-neutral-900 mb-2">Order Confirmed!</h1>
+
+          <p className="text-neutral-600 mb-6">
+            We appreciate your business! A confirmation email will be sent to currently <span className="font-semibold text-neutral-900">{customerEmail}</span>.
+          </p>
+
+          <div className="bg-neutral-50 rounded-xl p-4 mb-8 text-sm text-neutral-600 border border-neutral-100">
+            <p className="flex items-center justify-center gap-2 mb-1">
+              <Mail className="w-4 h-4" />
+              Need help?
+            </p>
+            <a href="mailto:orders@schoolbar.local" className="text-blue-600 font-medium hover:underline">
+              orders@schoolbar.local
+            </a>
+          </div>
+
+          <Link
+            href="/"
+            className="w-full bg-neutral-900 text-white font-semibold py-3 px-6 rounded-xl hover:bg-neutral-800 transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <Home className="w-4 h-4" />
+            Return to Home
+          </Link>
+        </div>
+      </main>
     )
   }
 }
