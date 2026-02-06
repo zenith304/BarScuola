@@ -72,13 +72,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     };
 
     const updateQty = (productId: string, delta: number, selectedOptions?: string) => {
-        setItems(prev => prev.map(i => {
-            if (i.productId === productId && (i.selectedOptions || '') === (selectedOptions || '')) {
-                const newQty = Math.max(1, i.qty + delta);
-                return { ...i, qty: newQty };
-            }
-            return i;
-        }));
+        setItems(prev => {
+            return prev.map(i => {
+                if (i.productId === productId && (i.selectedOptions || '') === (selectedOptions || '')) {
+                    return { ...i, qty: i.qty + delta };
+                }
+                return i;
+            }).filter(i => i.qty > 0);
+        });
     };
 
     const clearCart = () => setItems([]);
