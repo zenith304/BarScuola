@@ -7,6 +7,9 @@ import { ShopOrder, OrderItem, PrintJob } from '@prisma/client';
 import { DeleteAllOrdersButton } from '@/app/components/admin/DeleteAllOrdersButton';
 
 
+
+export const dynamic = 'force-dynamic';
+
 type DashboardOrder = ShopOrder & { items: OrderItem[] };
 
 export default async function AdminDashboard({ searchParams }: { searchParams: { status?: string, q?: string } }) {

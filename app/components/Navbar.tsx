@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { CartCount } from './CartCount';
 
 export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
     return (
@@ -17,7 +18,10 @@ export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
                         {type === 'student' ? (
                             <>
                                 <Link href="/" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Menu</Link>
-                                <Link href="/cart" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Carrello</Link>
+                                <Link href="/cart" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium flex items-center">
+                                    Carrello
+                                    <CartCount />
+                                </Link>
                                 <Link href="/orders" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Ordini</Link>
                             </>
                         ) : (
