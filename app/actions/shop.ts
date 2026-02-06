@@ -54,121 +54,117 @@ export async function getSettings() {
 
 export async function createOrder(input: CreateOrderInput) {
     // 1. Check Settings (Cutoff & Enabled)
-    const settings = await prisma.settings.findUnique({ where: { id: 1 } });
-    if (!settings?.orderingEnabled) {
-        throw new Error('Le ordinazioni sono chiuse administrativamente.');
-    }
+    try {
+        const settings = await prisma.settings.findUnique({ where: { id: 1 } });
+        if (!settings?.orderingEnabled) {
+            throw new Error('Le ordinazioni sono chiuse administrativamente.');
+        }
 
-    const now = new Date();
-    // Simple cutoff check: Input string "10:00" vs Current Time
-    // We assume server time is correct (Europe/Rome).
-    // Ideally use date-fns-tz but for MVP simple string compare HH:MM is ok if timezone matches
-    const [cutoffHour, cutoffMinute] = settings.cutoffTime.split(':').map(Number);
-    const currentHour = now.getHours();
-    const currentMinute = now.getMinutes();
+        const now = new Date();
+        const [cutoffHour, cutoffMinute] = settings.cutoffTime.split(':').map(Number);
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
 
-    if (currentHour > cutoffHour || (currentHour === cutoffHour && currentMinute >= cutoffMinute)) {
-        throw new Error(`Ordinazioni chiuse. (Cutoff: ${settings.cutoffTime})`);
-    }
+        if (currentHour > cutoffHour || (currentHour === cutoffHour && currentMinute >= cutoffMinute)) {
+            throw new Error(`Ordinazioni chiuse. (Cutoff: ${settings.cutoffTime})`);
+        }
 
-    // 2. Calculate Total & Validate Stock (optional)
-    let totalCents = 0;
-    const orderItemsData: { productId: string; nameSnapshot: string; priceCentsSnapshot: number; qty: number; topicSnapshot?: string | null; selectedOptions?: string | null }[] = [];
+        // 2. Calculate Total & Validate Stock (optional)
+        let totalCents = 0;
+        const orderItemsData: { productId: string; nameSnapshot: string; priceCentsSnapshot: number; qty: number; topicSnapshot?: string | null; selectedOptions?: string | null }[] = [];
 
-    for (const item of input.cart) {
-        const product = await prisma.product.findUnique({ where: { id: item.productId } });
-        if (!product) throw new Error(`Prodotto non trovato: ${item.productId}`);
-        if (!product.isAvailable) throw new Error(`Prodotto non disponibile: ${product.name}`);
+        for (const item of input.cart) {
+            const product = await prisma.product.findUnique({ where: { id: item.productId } });
+            if (!product) throw new Error(`Prodotto non trovato: ${item.productId}`);
+            if (!product.isAvailable) throw new Error(`Prodotto non disponibile: ${product.name}`);
 
-        totalCents += product.priceCents * item.qty;
-        orderItemsData.push({
-            productId: product.id,
-            nameSnapshot: product.name,
-            priceCentsSnapshot: product.priceCents,
-            qty: item.qty,
-            topicSnapshot: product.topic || null,
-            selectedOptions: item.selectedOptions || null,
-        });
-    }
+            totalCents += product.priceCents * item.qty;
+            orderItemsData.push({
+                productId: product.id,
+                nameSnapshot: product.name,
+                priceCentsSnapshot: product.priceCents,
+                qty: item.qty,
+                topicSnapshot: product.topic || null,
+                selectedOptions: item.selectedOptions || null,
+            });
+        }
 
-    // 3. Generate Unique Pickup Code (4 digits)
-    // Retry loop to ensure uniqueness for TODAY
-    let pickupCode = '';
-    let unique = false;
-    let attempts = 0;
+        // 3. Generate Unique Pickup Code (4 digits)
+        let pickupCode = '';
+        let unique = false;
+        let attempts = 0;
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
 
-    // We check uniqueness against orders created TODAY
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+        while (!unique && attempts < 10) {
+            pickupCode = Math.floor(1000 + Math.random() * 9000).toString(); // 1000-9999
+            const existing = await prisma.shopOrder.findFirst({
+                where: {
+                    pickupCode,
+                    createdAt: { gte: startOfDay },
+                    status: { not: 'CANCELLED' }
+                }
+            });
+            if (!existing) unique = true;
+            attempts++;
+        }
 
-    while (!unique && attempts < 10) {
-        pickupCode = Math.floor(1000 + Math.random() * 9000).toString(); // 1000-9999
-        const existing = await prisma.shopOrder.findFirst({
-            where: {
+        if (!unique) throw new Error('Impossibile generare codice univoco. Riprova.');
+
+        // 4. Create Order (Status: PENDING_PAYMENT)
+        const order = await prisma.shopOrder.create({
+            data: {
+                studentName: input.studentName,
+                studentClass: input.studentClass,
+                note: input.note,
+                status: 'PENDING_PAYMENT',
                 pickupCode,
-                createdAt: { gte: startOfDay },
-                status: { not: 'CANCELLED' } // Reuse code only if previous was cancelled? Or simple unique constraint.
-            }
-        });
-        if (!existing) unique = true;
-        attempts++;
-    }
-
-    if (!unique) throw new Error('Impossibile generare codice univoco. Riprova.');
-
-    // 4. Create Order (Status: PENDING_PAYMENT)
-    const order = await prisma.shopOrder.create({
-        data: {
-            studentName: input.studentName,
-            studentClass: input.studentClass,
-            note: input.note,
-            status: 'PENDING_PAYMENT',
-            pickupCode,
-            totalCents,
-            items: {
-                create: orderItemsData
-            }
-        },
-        include: { items: true }
-    });
-
-    // 5. Create Stripe Checkout Session
-    // We need to pass the orderId to the webhook via metadata or client_reference_id
-    // We also need line items for Stripe (optional but good for Receipt)
-    // For simplicity, we can just do a total amount or map items. Mapping is better.
-
-    const line_items = order.items.map((item: any) => ({
-        price_data: {
-            currency: 'eur',
-            product_data: {
-                name: item.nameSnapshot,
-                description: item.selectedOptions ? `${item.selectedOptions}` : undefined,
+                totalCents,
+                items: {
+                    create: orderItemsData
+                }
             },
-            unit_amount: item.priceCentsSnapshot,
-        },
-        quantity: item.qty,
-    }));
+            include: { items: true }
+        });
 
-    // Add a small fee or ensure min amount if needed? Stripe has min limits. 
-    // Assuming totalCents is > 0.
+        // 5. Create Stripe Checkout Session
+        const line_items = order.items.map((item: any) => ({
+            price_data: {
+                currency: 'eur',
+                product_data: {
+                    name: item.nameSnapshot,
+                    description: item.selectedOptions ? `${item.selectedOptions}` : undefined,
+                },
+                unit_amount: item.priceCentsSnapshot,
+            },
+            quantity: item.qty,
+        }));
 
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items,
-        mode: 'payment',
-        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
-        metadata: {
-            orderId: order.id,
-        },
-        client_reference_id: order.id,
-    });
+        if (!process.env.NEXT_PUBLIC_APP_URL) {
+            throw new Error('NEXT_PUBLIC_APP_URL not set in environment variables');
+        }
 
-    if (!session.url) {
-        throw new Error('Errore nella creazione del pagamento Stripe.');
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items,
+            mode: 'payment',
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?canceled=true`,
+            metadata: {
+                orderId: order.id,
+            },
+            client_reference_id: order.id,
+        });
+
+        if (!session.url) {
+            throw new Error('Errore nella creazione del pagamento Stripe.');
+        }
+
+        return { url: session.url, orderId: order.id };
+    } catch (error) {
+        console.error('Error in createOrder:', error);
+        throw error;
     }
-
-    return { url: session.url, orderId: order.id };
 }
 
 export async function getMyOrders(limit = 10) {
