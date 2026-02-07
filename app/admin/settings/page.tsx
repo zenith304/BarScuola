@@ -11,10 +11,13 @@ export default async function SettingsPage() {
 
     async function saveSettings(formData: FormData) {
         'use server';
-        const cutoffTime = formData.get('cutoffTime') as string;
+        const orderStartTime = formData.get('orderStartTime') as string;
+        const orderEndTime = formData.get('orderEndTime') as string;
+        const pickupStartTime = formData.get('pickupStartTime') as string;
+        const pickupEndTime = formData.get('pickupEndTime') as string;
         const orderingEnabled = formData.get('orderingEnabled') === 'on';
 
-        await updateSettings(cutoffTime, orderingEnabled);
+        await updateSettings(orderStartTime, orderEndTime, pickupStartTime, pickupEndTime, orderingEnabled);
     }
 
     return (
@@ -22,16 +25,54 @@ export default async function SettingsPage() {
             <h1 className="text-3xl font-bold text-gray-900">Impostazioni Bar</h1>
             <Card className="p-6">
                 <form action={saveSettings} className="space-y-6">
-                    <div className="space-y-1">
-                        <label className="font-medium text-gray-900">Orario di Chiusura Ordini (Cutoff)</label>
-                        <p className="text-sm text-gray-500">I ragazzi non potranno ordinare dopo questo orario.</p>
-                        <Input
-                            name="cutoffTime"
-                            type="time"
-                            className="text-gray-900"
-                            defaultValue={settings?.cutoffTime || '10:00'}
-                            required
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <h3 className="font-semibold text-gray-900 border-b pb-2">Orario Ordinazioni</h3>
+                            <div className="space-y-1">
+                                <label className="font-medium text-gray-900">Inizio Ordini</label>
+                                <Input
+                                    name="orderStartTime"
+                                    type="time"
+                                    className="text-gray-900"
+                                    defaultValue={settings?.orderStartTime || '00:00'}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="font-medium text-gray-900">Fine Ordini</label>
+                                <Input
+                                    name="orderEndTime"
+                                    type="time"
+                                    className="text-gray-900"
+                                    defaultValue={settings?.orderEndTime || '10:00'}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="font-semibold text-gray-900 border-b pb-2">Orario Ritiro</h3>
+                            <div className="space-y-1">
+                                <label className="font-medium text-gray-900">Inizio Ritiro</label>
+                                <Input
+                                    name="pickupStartTime"
+                                    type="time"
+                                    className="text-gray-900"
+                                    defaultValue={settings?.pickupStartTime || '13:00'}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="font-medium text-gray-900">Fine Ritiro</label>
+                                <Input
+                                    name="pickupEndTime"
+                                    type="time"
+                                    className="text-gray-900"
+                                    defaultValue={settings?.pickupEndTime || '14:00'}
+                                    required
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2 pt-4 border-t border-gray-100">

@@ -53,6 +53,9 @@ export default function MyOrdersPage() {
                         <div>
                             <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleString('it-IT')}</p>
                             <h3 className="font-bold text-lg mt-1 text-gray-900">Codice Ritiro: <span className="text-xl text-gray-900">{order.pickupCode}</span></h3>
+                            {order.pickupTime && (
+                                <p className="text-sm font-medium text-gray-700">Ritiro alle: <span className="font-bold">{order.pickupTime}</span></p>
+                            )}
                             <p className="text-sm font-medium mt-1 text-gray-900">Stato: <span className={`
                  px-2 py-0.5 rounded text-xs uppercase
                  ${order.status === 'PAID' ? 'bg-green-100 text-green-800' : ''}
@@ -66,7 +69,7 @@ export default function MyOrdersPage() {
                             {order.status === 'PAID' ? (
                                 <Link href={`/order/${order.id}`} className="text-sm text-blue-600 hover:underline">Dettagli</Link>
                             ) : (
-                                <button
+                                <><button
                                     onClick={async () => {
                                         try {
                                             const { retryPayment } = await import('@/app/actions/shop');
@@ -79,7 +82,16 @@ export default function MyOrdersPage() {
                                     className="text-sm text-blue-600 hover:underline bg-transparent border-0 cursor-pointer p-0"
                                 >
                                     Riprova a pagare
-                                </button>
+                                </button><Button onClick={async () => {
+                                    try {
+                                        const { deleteOrder } = await import('@/app/actions/shop');
+                                        await deleteOrder(order.id);
+                                        localStorage.removeItem('bar-scuola-orders');
+                                        window.location.href = '/orders';
+                                    } catch (e) {
+                                        alert('Errore nell\'eliminare l\'ordine');
+                                    }
+                                }} className="text-sm text-red-600 hover:underline">Elimina</Button></>
                             )}
                         </div>
                     </div>

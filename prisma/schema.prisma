@@ -44,6 +44,7 @@ model ShopOrder {
   createdAt    DateTime    @default(now())
   status       String // PAID, IN_PREPARATION, READY, DELIVERED, CANCELLED
   pickupCode   String // 4-digit code
+  pickupTime   String? // e.g. "10:30"
   studentName  String
   studentClass String
   note         String?
@@ -69,7 +70,10 @@ model OrderItem {
 
 model Settings {
   id                   Int     @id @default(1)
-  cutoffTime           String  @default("10:00")
+  orderStartTime       String  @default("00:00")
+  orderEndTime         String  @default("10:00") // Was cutoffTime
+  pickupStartTime      String  @default("10:00") // Start of pickup window
+  pickupEndTime        String  @default("11:00") // End of pickup window
   orderingEnabled      Boolean @default(true)
   lifetimeRevenueCents Int     @default(0)
 }

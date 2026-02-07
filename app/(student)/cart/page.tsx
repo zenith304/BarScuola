@@ -5,8 +5,9 @@ import { Button } from '@/app/components/ui/Button';
 import { Input } from '@/app/components/ui/Input';
 import { Card } from '@/app/components/ui/Card';
 import { useState } from 'react';
-import { createOrder } from '@/app/actions/shop';
+import { createOrder, getSettings } from '@/app/actions/shop';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function CartPage() {
     const { items, removeFromCart, updateQty, totalCents, clearCart } = useCart();
@@ -15,8 +16,14 @@ export default function CartPage() {
     const [studentName, setStudentName] = useState('');
     const [studentClass, setStudentClass] = useState('');
     const [note, setNote] = useState('');
+    const [pickupTime, setPickupTime] = useState('');
+    const [settings, setSettings] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        getSettings().then(setSettings);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,6 +31,28 @@ export default function CartPage() {
             setError('Nome e Classe sono obbligatori');
             return;
         }
+        if (!pickupTime) {
+            setError('Orario di ritiro obbligatorio');
+            return;
+        }
+
+        // Client-side validation for pickup time
+        if (settings) {
+            const [pHeader, pMin] = pickupTime.split(':').map(Number);
+            const pVal = pHeader * 60 + pMin;
+
+            const [startH, startM] = settings.pickupStartTime.split(':').map(Number);
+            const startVal = startH * 60 + startM;
+
+            const [endH, endM] = settings.pickupEndTime.split(':').map(Number);
+            const endVal = endH * 60 + endM;
+
+            if (pVal < startVal || pVal > endVal) {
+                setError(`Orario non valido. Scegli tra ${settings.pickupStartTime} e ${settings.pickupEndTime}`);
+                return;
+            }
+        }
+
         if (items.length === 0) {
             setError('Il carrello è vuoto');
             return;
@@ -37,6 +66,7 @@ export default function CartPage() {
                 studentName,
                 studentClass,
                 note,
+                pickupTime,
                 cart: items.map(i => ({ productId: i.productId, qty: i.qty, selectedOptions: i.selectedOptions }))
             });
 
@@ -125,10 +155,25 @@ export default function CartPage() {
                         className="text-gray-900"
                         required
                     />
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                            Orario di Ritiro
+                            {settings && <span className="text-gray-500 font-normal ml-1">({settings.pickupStartTime} - {settings.pickupEndTime})</span>}
+                        </label>
+                        <input
+                            type="time"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                            value={pickupTime}
+                            onChange={e => setPickupTime(e.target.value)}
+                            required
+                        />
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">Note (opzionale)</label>
                         <textarea
-                            className="w-full rounded-md border border-black-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             rows={3}
                             maxLength={120}
                             value={note}
@@ -142,7 +187,7 @@ export default function CartPage() {
                     <Button type="submit" className="w-full text-lg py-3" isLoading={isSubmitting}>
                         ORDINA (Paga Ora)
                     </Button>
-                    <p className="text-xs text-center text-black-500 gray-500">
+                    <p className="text-xs text-center text-gray-500">
                         Cliccando Ordina, confermi il pagamento e l'ordine verrà inviato.
                     </p>
                 </form>

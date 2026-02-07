@@ -234,13 +234,25 @@ export async function toggleProductAvailability(id: string, current: boolean, fo
 }
 
 // --- Settings ---
-export async function updateSettings(cutoffTime: string, orderingEnabled: boolean) {
+export async function updateSettings(
+    orderStartTime: string,
+    orderEndTime: string,
+    pickupStartTime: string,
+    pickupEndTime: string,
+    orderingEnabled: boolean
+) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
 
     await prisma.settings.update({
         where: { id: 1 },
-        data: { cutoffTime, orderingEnabled }
+        data: {
+            orderStartTime,
+            orderEndTime,
+            pickupStartTime,
+            pickupEndTime,
+            orderingEnabled
+        }
     });
     revalidatePath('/admin/settings');
 }
@@ -277,6 +289,20 @@ export async function deleteAllOrders() {
         prisma.orderItem.deleteMany(),
         prisma.printJob.deleteMany(),
         prisma.shopOrder.deleteMany(),
+    ]);
+
+    revalidatePath('/admin/dashboard');
+}
+
+export async function deleteOrder(orderId: string) {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    // Delete in order to avoid foreign key constraints
+    await prisma.$transaction([
+        prisma.orderItem.deleteMany({ where: { orderId } }),
+        prisma.printJob.deleteMany({ where: { orderId } }),
+        prisma.shopOrder.delete({ where: { id: orderId } }),
     ]);
 
     revalidatePath('/admin/dashboard');

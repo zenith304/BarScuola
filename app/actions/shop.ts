@@ -16,6 +16,7 @@ export type CreateOrderInput = {
     studentName: string;
     studentClass: string;
     note?: string;
+    pickupTime?: string;
     cart: CartItem[];
 };
 
@@ -61,12 +62,39 @@ export async function createOrder(input: CreateOrderInput) {
         }
 
         const now = new Date();
-        const [cutoffHour, cutoffMinute] = settings.cutoffTime.split(':').map(Number);
+        // Adjust for Italy time if server is UTC?
+        // Assuming server time is correct or we use UTC offsets.
+        // For simplicity, we trust system time for now or assume Italy.
+
+        const [orderStartHour, orderStartMinute] = settings.orderStartTime.split(':').map(Number);
+        const [orderEndHour, orderEndMinute] = settings.orderEndTime.split(':').map(Number);
+
         const currentHour = now.getHours();
         const currentMinute = now.getMinutes();
+        const currentTimeVal = currentHour * 60 + currentMinute;
+        const orderStartTimeVal = orderStartHour * 60 + orderStartMinute;
+        const orderEndTimeVal = orderEndHour * 60 + orderEndMinute;
 
-        if (currentHour > cutoffHour || (currentHour === cutoffHour && currentMinute >= cutoffMinute)) {
-            throw new Error(`Ordinazioni chiuse. (Cutoff: ${settings.cutoffTime})`);
+        if (currentTimeVal < orderStartTimeVal || currentTimeVal > orderEndTimeVal) {
+            throw new Error(`Ordinazioni chiuse. (Orario: ${settings.orderStartTime} - ${settings.orderEndTime})`);
+        }
+
+        // Validate Pickup Time
+        if (!input.pickupTime) {
+            throw new Error('Orario di ritiro mancante.');
+        }
+
+        const [pickupHour, pickupMinute] = input.pickupTime.split(':').map(Number);
+        const pickupTimeVal = pickupHour * 60 + pickupMinute;
+
+        const [pickupStartHour, pickupStartMinute] = settings.pickupStartTime.split(':').map(Number);
+        const [pickupEndHour, pickupEndMinute] = settings.pickupEndTime.split(':').map(Number);
+
+        const pickupStartTimeVal = pickupStartHour * 60 + pickupStartMinute;
+        const pickupEndTimeVal = pickupEndHour * 60 + pickupEndMinute;
+
+        if (pickupTimeVal < pickupStartTimeVal || pickupTimeVal > pickupEndTimeVal) {
+            throw new Error(`Orario di ritiro non valido. Scegli tra ${settings.pickupStartTime} e ${settings.pickupEndTime}`);
         }
 
         // 2. Calculate Total & Validate Stock (optional)
@@ -117,6 +145,7 @@ export async function createOrder(input: CreateOrderInput) {
                 studentName: input.studentName,
                 studentClass: input.studentClass,
                 note: input.note,
+                pickupTime: input.pickupTime,
                 status: 'PENDING_PAYMENT',
                 pickupCode,
                 totalCents,
@@ -206,7 +235,12 @@ export async function finalizeOrder(orderId: string) {
         const now = new Date();
         const dateStr = now.toLocaleDateString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
-        let printText = `ORDINE BAR\n${dateStr}\n\nCODICE RITIRO: ${order.pickupCode}\n\n`;
+        let printText = `ORDINE BAR\n${dateStr}\n\nCODICE RITIRO: ${order.pickupCode}\n`;
+        if (order.pickupTime) {
+            printText += `ORARIO RITIRO: ${order.pickupTime}\n\n`;
+        } else {
+            printText += `\n`;
+        }
         printText += `${order.studentName} (${order.studentClass})\n`;
         order.items.forEach((i) => {
             let itemLine = `${i.qty} x ${i.nameSnapshot}`;
@@ -295,4 +329,26 @@ export async function retryPayment(orderId: string) {
     if (!session.url) throw new Error('Errore Stripe');
 
     return session.url;
+}
+
+export async function deleteOrder(orderId: string) {
+    // 1. Fetch Order to verify it exists and check status
+    const order = await prisma.shopOrder.findUnique({
+        where: { id: orderId }
+    });
+
+    if (!order) throw new Error('Ordine non trovato');
+
+    // 2. Only allow deletion of unpaid orders
+    if (order.status === 'PAID') {
+        throw new Error('Non è possibile eliminare un ordine già pagato');
+    }
+
+    // 3. Delete the order (cascade will handle related items)
+    await prisma.shopOrder.delete({
+        where: { id: orderId }
+    });
+
+    revalidatePath('/orders');
+    revalidatePath('/admin/dashboard');
 }

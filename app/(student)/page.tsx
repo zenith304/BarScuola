@@ -3,6 +3,8 @@ import { Product } from '@prisma/client';
 import { Card } from '@/app/components/ui/Card';
 import { Button } from '@/app/components/ui/Button';
 import { AddToCartButton } from '@/app/components/AddToCartButton'; // We need this client component
+import { FloatingCartButton } from '@/app/components/FloatingCartButton';
+
 
 export default async function MenuPage() {
   const menu = await getMenu();
@@ -23,7 +25,9 @@ export default async function MenuPage() {
     <div className="space-y-8">
       <header className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Menu Bar</h1>
-        <p className="text-gray-500">Ordina entro le {settings?.cutoffTime}</p>
+        <p className="text-gray-500">
+          Ordina dalle {settings?.orderStartTime} alle {settings?.orderEndTime}
+        </p>
       </header>
 
       {categories.map((cat) => (
@@ -55,6 +59,7 @@ export default async function MenuPage() {
           </div>
         </section>
       ))}
+      <FloatingCartButton />
     </div>
   );
 }

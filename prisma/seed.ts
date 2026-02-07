@@ -27,7 +27,10 @@ async function main() {
     where: { id: 1 },
     update: {},
     create: {
-      cutoffTime: '10:00',
+      orderStartTime: '00:00',
+      orderEndTime: '10:00',
+      pickupStartTime: '12:00',
+      pickupEndTime: '14:00',
       orderingEnabled: true,
     },
   });
