@@ -81,7 +81,7 @@ export default function MyOrdersPage() {
                                     }} className="text-sm text-blue-600 hover:underline"
                                 >
                                     Riprova a pagare
-                                </button><Button onClick={async () => {
+                                </button><button onClick={async () => {
                                     try {
                                         const { deleteOrder } = await import('@/app/actions/shop');
                                         await deleteOrder(order.id);
@@ -104,7 +104,7 @@ export default function MyOrdersPage() {
                                             alert('Errore nell\'eliminare l\'ordine');
                                         }
                                     }
-                                }} className="text-sm text-red-600 hover:underline">Elimina Ordine</Button></>
+                                }} className="text-sm text-red-600 hover:underline ml-3">Elimina Ordine</button></>
                             )}
                         </div>
                     </div>
