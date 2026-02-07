@@ -79,16 +79,25 @@ export default function MyOrdersPage() {
                                             alert('Errore nel riprovare il pagamento');
                                         }
                                     }}
-                                    className="text-sm text-blue-600 hover:underline bg-transparent border-0 cursor-pointer p-0"
                                 >
                                     Riprova a pagare
                                 </button><Button onClick={async () => {
                                     try {
                                         const { deleteOrder } = await import('@/app/actions/shop');
                                         await deleteOrder(order.id);
-                                        localStorage.removeItem('bar-scuola-orders');
-                                        window.location.href = '/orders';
+
+                                        // Specific removal logic
+                                        const saved = localStorage.getItem('bar-scuola-orders');
+                                        if (saved) {
+                                            const ids = JSON.parse(saved);
+                                            const newIds = ids.filter((id: string) => id !== order.id);
+                                            localStorage.setItem('bar-scuola-orders', JSON.stringify(newIds));
+                                        }
+
+                                        // Update UI state directly
+                                        setOrders(orders.filter(o => o.id !== order.id));
                                     } catch (e) {
+                                        console.error(e);
                                         alert('Errore nell\'eliminare l\'ordine');
                                     }
                                 }} className="text-sm text-red-600 hover:underline">Elimina</Button></>

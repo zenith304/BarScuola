@@ -95,7 +95,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             <div className="flex justify-between items-start mb-4">
                                 <div className="text-gray-900">
                                     <div className="text-3xl font-black">{order.pickupCode}</div>
-                                    <div className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleTimeString('it-IT')} - {order.studentName} ({order.studentClass})</div>
+                                    <div className="text-3xl font-black">{order.pickupCode}</div>
+                                    <div className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleTimeString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' })} - {order.studentName} ({order.studentClass})</div>
                                 </div>
                                 <div className="text-right">
                                     <div className="font-bold text-lg text-gray-900">{(order.totalCents / 100).toFixed(2)}€</div>
@@ -162,7 +163,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             <div key={job.id} className="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0">
                                 <div className="flex justify-between items-start mb-2">
                                     <span className="font-bold text-gray-900">#{job.order.pickupCode}</span>
-                                    <span className="text-xs text-gray-400">{new Date(job.createdAt).toLocaleTimeString()}</span>
+                                    <span className="text-xs text-gray-400">{new Date(job.createdAt).toLocaleTimeString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                                 <pre className="text-xs bg-gray-50 p-2 rounded whitespace-pre-wrap font-mono mb-2 border border-gray-200 text-gray-900">
                                     {job.payloadText}
