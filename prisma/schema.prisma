@@ -86,3 +86,10 @@ model PrintJob {
   status      String    @default("QUEUED") // QUEUED, PRINTED
   payloadText String
 }
+
+model Feedback {
+  id        String   @id @default(uuid())
+  text      String
+  createdAt DateTime @default(now())
+  status    String   @default("NEW") // NEW, READ, ARCHIVED
+}

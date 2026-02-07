@@ -28,6 +28,7 @@ export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
                             <>
                                 <Link href="/admin/dashboard" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Ordini</Link>
                                 <Link href="/admin/products" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Prodotti</Link>
+                                <Link href="/admin/feedback" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Feedback</Link>
                                 <Link href="/admin/settings" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Settings</Link>
                                 <form action="/auth/logout" method="post">
                                     {/* Logout action wrapper needed or Client Component calling logout */}

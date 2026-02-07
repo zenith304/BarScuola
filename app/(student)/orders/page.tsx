@@ -78,7 +78,7 @@ export default function MyOrdersPage() {
                                         } catch (e) {
                                             alert('Errore nel riprovare il pagamento');
                                         }
-                                    }}
+                                    }} className="text-sm text-blue-600 hover:underline"
                                 >
                                     Riprova a pagare
                                 </button><Button onClick={async () => {
