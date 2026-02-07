@@ -58,7 +58,7 @@ model ShopOrder {
 model OrderItem {
   id                 String    @id @default(uuid())
   orderId            String
-  order              ShopOrder @relation(fields: [orderId], references: [id])
+  order              ShopOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId          String?
   product            Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
   nameSnapshot       String
@@ -81,7 +81,7 @@ model Settings {
 model PrintJob {
   id          String    @id @default(uuid())
   orderId     String    @unique
-  order       ShopOrder @relation(fields: [orderId], references: [id])
+  order       ShopOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
   createdAt   DateTime  @default(now())
   status      String    @default("QUEUED") // QUEUED, PRINTED
   payloadText String

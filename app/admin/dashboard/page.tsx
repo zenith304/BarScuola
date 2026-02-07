@@ -95,7 +95,6 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                             <div className="flex justify-between items-start mb-4">
                                 <div className="text-gray-900">
                                     <div className="text-3xl font-black">{order.pickupCode}</div>
-                                    <div className="text-3xl font-black">{order.pickupCode}</div>
                                     <div className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleTimeString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' })} - {order.studentName} ({order.studentClass})</div>
                                 </div>
                                 <div className="text-right">

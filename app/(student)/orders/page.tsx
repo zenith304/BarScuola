@@ -97,10 +97,14 @@ export default function MyOrdersPage() {
                                         // Update UI state directly
                                         setOrders(orders.filter(o => o.id !== order.id));
                                     } catch (e) {
-                                        console.error(e);
-                                        alert('Errore nell\'eliminare l\'ordine');
+                                        console.error('Delete failed:', e);
+                                        if (e instanceof Error) {
+                                            alert(`Errore: ${e.message}`);
+                                        } else {
+                                            alert('Errore nell\'eliminare l\'ordine');
+                                        }
                                     }
-                                }} className="text-sm text-red-600 hover:underline">Elimina</Button></>
+                                }} className="text-sm text-red-600 hover:underline">Elimina Ordine</Button></>
                             )}
                         </div>
                     </div>

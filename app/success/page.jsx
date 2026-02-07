@@ -51,7 +51,7 @@ export default async function Success({ searchParams }) {
               Hai bisogno di aiuto?
             </p>
             <a href="mailto:[EMAIL_ADDRESS]" className="text-blue-600 font-medium hover:underline">
-              [EMAIL_ADDRESS]
+              rappstudenti@itisrossi.vi.it
             </a>
           </div>
 
