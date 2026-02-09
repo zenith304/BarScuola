@@ -42,7 +42,7 @@ export default async function AdminProductsPage() {
                                     <Button size="sm" variant="secondary">Modifica</Button>
                                 </Link>
                                 <form action={deleteProduct.bind(null, product.id)}>
-                                    <Button size="sm" variant="danger">Elimina</Button>
+                                    <Button size="sm" variant="destructive">Elimina</Button>
                                 </form>
                             </div>
                         </div>

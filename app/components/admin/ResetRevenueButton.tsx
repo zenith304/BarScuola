@@ -24,7 +24,7 @@ export function ResetRevenueButton() {
 
     return (
         <Button
-            variant="danger"
+            variant="destructive"
             onClick={handleReset}
             isLoading={isResetting}
             size="sm"

@@ -23,7 +23,7 @@ export function DeleteAllOrdersButton() {
 
     return (
         <Button
-            variant="danger"
+            variant="destructive"
             onClick={handleClear}
             isLoading={isDeleting}
             size="sm"
