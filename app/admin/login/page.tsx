@@ -17,13 +17,13 @@ export default function AdminLoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
             <Card className="w-full max-w-md p-8 shadow-lg">
-                <h1 className="text-2xl font-bold text-center mb-6 text-gray-900">Admin Login</h1>
+                <h1 className="text-2xl font-bold text-center mb-6 text-foreground">Admin Login</h1>
 
                 <form action={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Email
                         </label>
                         <Input
@@ -32,11 +32,11 @@ export default function AdminLoginPage() {
                             required
                             autoComplete="email"
                             placeholder="email@domain.com"
-                            className="text-gray-900"
+                            className="text-foreground"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Password
                         </label>
                         <Input
@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
                             type="password"
                             required
                             autoComplete="current-password"
-                            className="text-gray-900"
+                            className="text-foreground"
                         />
                     </div>
 

@@ -28,13 +28,13 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
                 </svg>
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-900">Ordine Confermato!</h1>
-            <p className="text-gray-600">Il tuo ordine è stato ricevuto e pagato.</p>
+            <h1 className="text-3xl font-bold text-foreground">Ordine Confermato!</h1>
+            <p className="text-muted-foreground">Il tuo ordine è stato ricevuto e pagato.</p>
 
-            <Card className="p-8 border-2 border-blue-500 bg-blue-50 relative overflow-hidden">
-                <h2 className="text-sm font-semibold text-blue-600 uppercase tracking-wide">Codice Ritiro</h2>
-                <div className="text-6xl font-black text-gray-900 my-4 tracking-widest">{order.pickupCode}</div>
-                <p className="text-sm text-gray-500 mb-6">Mostra questo codice al banco per ritirare.</p>
+            <Card className="p-8 border-2 border-primary bg-muted/50 relative overflow-hidden dark:border-primary/50">
+                <h2 className="text-sm font-semibold text-primary uppercase tracking-wide">Codice Ritiro</h2>
+                <div className="text-6xl font-black text-foreground my-4 tracking-widest">{order.pickupCode}</div>
+                <p className="text-sm text-muted-foreground mb-6">Mostra questo codice al banco per ritirare.</p>
 
                 <div className="mb-4">
                     <LiveClock />
@@ -46,25 +46,25 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
             </Card>
 
 
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-left">
-                <h3 className="font-bold text-lg mb-4 text-gray-900">Riepilogo Ordine</h3>
-                <p className="text-sm text-gray-600 mb-2">Studente: <span className="font-medium text-gray-900">{order.studentName} ({order.studentClass})</span></p>
-                <div className="space-y-2 border-t pt-4">
+            <div className="bg-card p-6 rounded-lg shadow-sm border border-border text-left">
+                <h3 className="font-bold text-lg mb-4 text-foreground">Riepilogo Ordine</h3>
+                <p className="text-sm text-muted-foreground mb-2">Studente: <span className="font-medium text-foreground">{order.studentName} ({order.studentClass})</span></p>
+                <div className="space-y-2 border-t border-border pt-4">
                     {order.items.map((item: OrderItem) => (
-                        <div key={item.id} className="flex justify-between text-sm text-gray-900">
+                        <div key={item.id} className="flex justify-between text-sm text-foreground">
                             <span>{item.qty}x {item.nameSnapshot}</span>
                             <span>{(item.priceCentsSnapshot * item.qty / 100).toFixed(2)}€</span>
                         </div>
                     ))}
                 </div>
-                <div className="flex justify-between font-bold text-lg mt-4 pt-4 border-t text-gray-900">
+                <div className="flex justify-between font-bold text-lg mt-4 pt-4 border-t border-border text-foreground">
                     <span>Totale</span>
                     <span>{(order.totalCents / 100).toFixed(2)}€</span>
                 </div>
                 {order.note && (
-                    <div className="mt-4 pt-4 border-t text-gray-900">
-                        <span className="text-xs font-bold text-gray-500 uppercase">Note</span>
-                        <p className="text-sm text-gray-700 bg-yellow-50 p-2 rounded mt-1">{order.note}</p>
+                    <div className="mt-4 pt-4 border-t border-border text-foreground">
+                        <span className="text-xs font-bold text-muted-foreground uppercase">Note</span>
+                        <p className="text-sm text-foreground bg-muted p-2 rounded mt-1">{order.note}</p>
                     </div>
                 )}
             </div>

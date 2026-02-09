@@ -74,16 +74,16 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
     return (
         <div className="max-w-xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6 text-gray-900">Modifica Prodotto</h1>
+            <h1 className="text-2xl font-bold mb-6 text-foreground">Modifica Prodotto</h1>
             <Card className="p-6">
-                <form action={handleSubmit} className="space-y-4 text-gray-900">
+                <form action={handleSubmit} className="space-y-4 text-foreground">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
                         <input
                             name="name"
                             defaultValue={product.name}
                             required
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         />
                     </div>
 
@@ -93,7 +93,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                             name="category"
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         >
                             <option value="Panini Semplici">Panini Semplici</option>
                             <option value="Panini Composti">Panini Composti</option>
@@ -111,7 +111,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                             name="topic"
                             defaultValue={product.topic || ''}
                             placeholder="es. Salse, Bevande, Extra"
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         />
                         <p className="text-xs text-gray-500 mt-1">Categorizza il prodotto per tipo (es. Salse, Bevande)</p>
                     </div>
@@ -123,7 +123,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                             type="number"
                             defaultValue={product.priceCents}
                             required
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         />
                     </div>
 
@@ -132,7 +132,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         <input
                             name="description"
                             defaultValue={product.description || ''}
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         />
                     </div>
 
@@ -141,7 +141,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                         <input
                             name="allergens"
                             defaultValue={product.allergens || ''}
-                            className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         />
                     </div>
 
@@ -162,21 +162,21 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                             <Button type="button" size="sm" variant="secondary" onClick={addOption}>+ Aggiungi Opzione</Button>
                         </div>
                         {options.map((opt, idx) => (
-                            <div key={idx} className="border rounded p-3 mb-2 bg-gray-50">
+                            <div key={idx} className="border border-border rounded p-3 mb-2 bg-muted/30">
                                 <div className="grid grid-cols-2 gap-2 mb-2">
                                     <input
                                         type="text"
                                         placeholder="Nome (es. Salse)"
                                         value={opt.name}
                                         onChange={(e) => updateOption(idx, 'name', e.target.value)}
-                                        className="rounded-md border border-gray-300 px-2 py-1 text-sm"
+                                        className="rounded-md border border-input bg-background px-2 py-1 text-sm"
                                     />
                                     <input
                                         type="text"
                                         placeholder="Scelte (es. Ketchup, Maionese)"
                                         value={opt.choices}
                                         onChange={(e) => updateOption(idx, 'choices', e.target.value)}
-                                        className="rounded-md border border-gray-300 px-2 py-1 text-sm"
+                                        className="rounded-md border border-input bg-background px-2 py-1 text-sm"
                                     />
                                 </div>
                                 <div className="flex justify-between items-center">

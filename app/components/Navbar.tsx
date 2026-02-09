@@ -5,7 +5,11 @@ import { CartCount } from './CartCount';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from './ui/Button';
 
+import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
+
 export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/80 dark:bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-background/60 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,6 +31,7 @@ export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
                     </div>
 
                     <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Desktop Menu */}
                         <div className="hidden md:flex items-center gap-1">
                             {type === 'student' ? (
                                 <>
@@ -54,10 +59,37 @@ export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
                                 </Link>
                             )}
                             <ThemeToggle />
+
+                            {/* Mobile Menu Toggle */}
+                            <button
+                                className="md:hidden p-2 rounded-md text-foreground hover:bg-slate-100 dark:hover:bg-slate-800"
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            >
+                                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Menu */}
+            {isMobileMenuOpen && (
+                <div className="md:hidden border-t border-border bg-background px-4 py-4 space-y-2 shadow-lg">
+                    {type === 'student' ? (
+                        <>
+                            <MobileNavLink href="/" onClick={() => setIsMobileMenuOpen(false)}>Menu</MobileNavLink>
+                            <MobileNavLink href="/orders" onClick={() => setIsMobileMenuOpen(false)}>I miei Ordini</MobileNavLink>
+                        </>
+                    ) : (
+                        <>
+                            <MobileNavLink href="/admin/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</MobileNavLink>
+                            <MobileNavLink href="/admin/products" onClick={() => setIsMobileMenuOpen(false)}>Prodotti</MobileNavLink>
+                            <MobileNavLink href="/admin/feedback" onClick={() => setIsMobileMenuOpen(false)}>Feedback</MobileNavLink>
+                            <MobileNavLink href="/admin/settings" onClick={() => setIsMobileMenuOpen(false)}>Impostazioni</MobileNavLink>
+                        </>
+                    )}
+                </div>
+            )}
         </nav>
     );
 }
@@ -71,4 +103,16 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
             {children}
         </Link>
     );
+}
+
+function MobileNavLink({ href, onClick, children }: { href: string, onClick: () => void, children: React.ReactNode }) {
+    return (
+        <Link
+            href={href}
+            onClick={onClick}
+            className="block px-4 py-3 text-base font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+        >
+            {children}
+        </Link>
+    )
 }
