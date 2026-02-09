@@ -1,24 +1,24 @@
-import { InputHTMLAttributes } from 'react';
-import { cn } from './Button';
+import * as React from "react"
+import { cn } from "@/lib/utils"
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-    label?: string;
-    error?: string;
-}
+export interface InputProps
+    extends React.InputHTMLAttributes<HTMLInputElement> { }
 
-export function Input({ className, label, error, ...props }: InputProps) {
-    return (
-        <div className="w-full">
-            {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+    ({ className, type, ...props }, ref) => {
+        return (
             <input
+                type={type}
                 className={cn(
-                    "w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50",
-                    error && "border-red-500 focus:ring-red-500",
+                    "flex h-10 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 transition-all",
                     className
                 )}
+                ref={ref}
                 {...props}
             />
-            {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-        </div>
-    );
-}
+        )
+    }
+)
+Input.displayName = "Input"
+
+export { Input }

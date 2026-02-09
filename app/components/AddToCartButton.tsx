@@ -37,20 +37,20 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     return (
         <div className="w-full space-y-2">
             {(inCart && (!hasOptions || items.filter(i => i.productId === product.id).length === 1)) ? (
-                <div className="flex items-center justify-between bg-green-50 rounded-md p-1 border border-green-200">
+                <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-1 border border-emerald-100 dark:border-emerald-900/30">
                     <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-green-700 hover:bg-green-100 hover:text-green-900"
+                        className="h-8 w-8 p-0 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-300"
                         onClick={() => updateQty(product.id, -1, inCart.selectedOptions)}
                     >
-                        -
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-minus"><path d="M5 12h14" /></svg>
                     </Button>
-                    <span className="font-bold text-green-900 w-8 text-center">{inCart.qty}</span>
+                    <span className="font-bold text-emerald-900 dark:text-emerald-100 w-8 text-center">{inCart.qty}</span>
                     <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-green-700 hover:bg-green-100 hover:text-green-900"
+                        className="h-8 w-8 p-0 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-300"
                         onClick={() => {
                             if (hasOptions) {
                                 // For options, we can't just "add" without confirming options. 
@@ -63,7 +63,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
                             }
                         }}
                     >
-                        +
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                     </Button>
                 </div>
             ) : (
@@ -78,7 +78,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
 
                     {inCart && hasOptions && (
                         <div className="text-center">
-                            <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded inline-block">
+                            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded inline-block">
                                 ✓ Aggiunto ({inCart.qty})
                             </span>
                         </div>

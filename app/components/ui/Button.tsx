@@ -1,54 +1,62 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+import { Loader2 } from "lucide-react"
 
-export function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
+const buttonVariants = cva(
+    "inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-95",
+    {
+        variants: {
+            variant: {
+                default: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/25 dark:bg-blue-600 dark:hover:bg-blue-500",
+                destructive:
+                    "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/25 dark:bg-red-900/50 dark:hover:bg-red-900/70 border border-red-200 dark:border-red-800",
+                outline:
+                    "border border-slate-200 bg-white hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-transparent dark:hover:bg-slate-800 dark:hover:text-slate-100",
+                secondary:
+                    "bg-slate-100 text-slate-900 hover:bg-slate-200/80 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-700",
+                ghost: "hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-50",
+                link: "text-blue-600 underline-offset-4 hover:underline dark:text-blue-400",
+                black: "bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/25 dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-200",
+            },
+            size: {
+                default: "h-10 px-4 py-2",
+                sm: "h-9 rounded-md px-3",
+                lg: "h-11 rounded-md px-8",
+                icon: "h-10 w-10",
+            },
+        },
+        defaultVariants: {
+            variant: "default",
+            size: "default",
+        },
+    }
+)
+
+export interface ButtonProps
+    extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+    asChild?: boolean
+    isLoading?: boolean
 }
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
-    size?: 'sm' | 'md' | 'lg';
-    isLoading?: boolean;
-}
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    ({ className, variant, size, asChild = false, isLoading, children, ...props }, ref) => {
+        const Comp = asChild ? Slot : "button"
+        return (
+            <Comp
+                className={cn(buttonVariants({ variant, size, className }))}
+                ref={ref}
+                disabled={isLoading || props.disabled}
+                {...props}
+            >
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {children}
+            </Comp>
+        )
+    }
+)
+Button.displayName = "Button"
 
-export function Button({
-    className,
-    variant = 'primary',
-    size = 'md',
-    isLoading,
-    children,
-    disabled,
-    ...props
-}: ButtonProps) {
-    const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
-
-    const variants = {
-        primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-        secondary: 'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500',
-        danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-        ghost: 'bg-transparent text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
-    };
-
-    const sizes = {
-        sm: 'px-3 py-1.5 text-sm',
-        md: 'px-4 py-2 text-base',
-        lg: 'px-6 py-3 text-lg',
-    };
-
-    return (
-        <button
-            className={cn(baseStyles, variants[variant], sizes[size], className)}
-            disabled={disabled || isLoading}
-            {...props}
-        >
-            {isLoading ? (
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-            ) : null}
-            {children}
-        </button>
-    );
-}
+export { Button, buttonVariants }

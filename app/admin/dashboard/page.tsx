@@ -36,30 +36,41 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
     return (
         <div className="space-y-8">
-            <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-gray-900">Dashboard Ordini</h1>
-                <div className="flex space-x-2">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Dashboard</h1>
+                    <p className="text-slate-500 dark:text-slate-400">Gestisci gli ordini e monitora l'attività.</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
                     <BulkActionButtons />
                     <DeleteAllOrdersButton />
                     <form action={async () => { 'use server';  /* handled by Link or form */ }}>
-                        {/* Refresh button just reloads page or revalidates */}
                         <Button variant="secondary" formAction={async () => { 'use server'; revalidatePath('/admin/dashboard') }}>
-                            Refresh
+                            🔄
                         </Button>
                     </form>
                 </div>
 
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className="p-4 bg-blue-50 border-blue-100">
-                    <div className="text-sm font-medium text-blue-600 uppercase tracking-wider">Incasso Odierno</div>
-                    <div className="text-2xl font-bold text-blue-900">{(dailyRevenueCents / 100).toFixed(2)}€</div>
-                </Card>
-                <Card className="p-4 bg-green-50 border-green-100">
-                    <div className="text-sm font-medium text-green-600 uppercase tracking-wider">Incasso Totale</div>
-                    <div className="text-2xl font-bold text-green-900">{(lifetimeRevenueCents / 100).toFixed(2)}€</div>
-                </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white shadow-lg">
+                    <div className="relative z-10">
+                        <div className="text-sm font-medium text-blue-100 uppercase tracking-wider mb-1">Incasso Odierno</div>
+                        <div className="text-4xl font-extrabold tracking-tight">{(dailyRevenueCents / 100).toFixed(2)}€</div>
+                        <div className="mt-4 text-xs font-medium text-blue-100 bg-white/20 inline-block px-2 py-1 rounded">
+                            Oggi
+                        </div>
+                    </div>
+                    <div className="absolute right-0 top-0 -mt-4 -mr-4 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
+                </div>
+                <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Incasso Totale</div>
+                    <div className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">{(lifetimeRevenueCents / 100).toFixed(2)}€</div>
+                    <div className="mt-4 text-xs font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 inline-block px-2 py-1 rounded">
+                        Tutto il tempo
+                    </div>
+                </div>
             </div>
 
             {/* Filters */}
@@ -179,13 +190,17 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 )}
                                 {['PAID', 'IN_PREPARATION', 'READY'].includes(order.status) && (
                                     <form action={updateOrderStatus.bind(null, order.id, 'CANCELLED')}>
-                                        <Button size="sm" variant="danger">Annulla</Button>
+                                        <Button size="sm" variant="destructive">Annulla</Button>
                                     </form>
                                 )}
                             </div>
                         </Card>
                     ))}
-                    {orders.length === 0 && <p className="text-gray-900 italic">Nessun ordine trovato</p>}
+                    {orders.length === 0 && (
+                        <div className="text-center py-12 bg-slate-50 dark:bg-slate-900/50 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                            <p className="text-slate-500 dark:text-slate-400 italic">Nessun ordine trovato con i filtri attuali.</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Print Queue Side Panel */}
@@ -210,6 +225,6 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

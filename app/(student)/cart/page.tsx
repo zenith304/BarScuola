@@ -146,22 +146,30 @@ export default function CartPage() {
             <Card className="p-6">
                 <h2 className="text-lg font-medium mb-4 text-gray-900">Dettagli Studente</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <Input
-                        label="Nome e Cognome"
-                        value={studentName}
-                        onChange={e => setStudentName(e.target.value)}
-                        placeholder="Mario Rossi"
-                        className="text-gray-900"
-                        required
-                    />
-                    <Input
-                        label="Classe"
-                        value={studentClass}
-                        onChange={e => setStudentClass(e.target.value)}
-                        placeholder="5A"
-                        className="text-gray-900"
-                        required
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                            Nome e Cognome
+                        </label>
+                        <Input
+                            value={studentName}
+                            onChange={e => setStudentName(e.target.value)}
+                            placeholder="Mario Rossi"
+                            className="text-gray-900"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                            Classe
+                        </label>
+                        <Input
+                            value={studentClass}
+                            onChange={e => setStudentClass(e.target.value)}
+                            placeholder="5A"
+                            className="text-gray-900"
+                            required
+                        />
+                    </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">

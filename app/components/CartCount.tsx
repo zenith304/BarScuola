@@ -19,7 +19,7 @@ export function CartCount() {
     if (count === 0) return null;
 
     return (
-        <span className="ml-1 inline-flex items-center justify-center -translate-y-0.5 bg-blue-100 text-blue-800 text-xs font-bold px-1.5 py-0.5 rounded-full">
+        <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full ring-2 ring-white dark:ring-slate-900 animate-in zoom-in duration-200">
             {count}
         </span>
     );
