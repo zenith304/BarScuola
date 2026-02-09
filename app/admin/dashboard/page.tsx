@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { ShopOrder, OrderItem, PrintJob } from '@prisma/client';
 import { DeleteAllOrdersButton } from '@/app/components/admin/DeleteAllOrdersButton';
-import { MarkAllReadyButton } from '@/app/components/admin/MarkAllPaidButton';
+import { BulkActionButtons } from '@/app/components/admin/BulkActionButtons';
 
 
 
@@ -39,7 +39,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-gray-900">Dashboard Ordini</h1>
                 <div className="flex space-x-2">
-                    <MarkAllReadyButton />
+                    <BulkActionButtons />
                     <DeleteAllOrdersButton />
                     <form action={async () => { 'use server';  /* handled by Link or form */ }}>
                         {/* Refresh button just reloads page or revalidates */}
