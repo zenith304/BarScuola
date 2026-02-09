@@ -62,13 +62,20 @@ export default function CartPage() {
         setError('');
 
         try {
-            const { url, orderId } = await createOrder({
+            const res = await createOrder({
                 studentName,
                 studentClass,
                 note,
                 pickupTime,
                 cart: items.map(i => ({ productId: i.productId, qty: i.qty, selectedOptions: i.selectedOptions }))
             });
+
+            if (res.error) {
+                setError(res.error);
+                return;
+            }
+
+            const { url, orderId } = res;
 
             clearCart();
             // Store Order ID in local storage for "My Orders"

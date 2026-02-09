@@ -31,7 +31,9 @@ export async function logoutAdmin() {
 }
 
 // --- Dashboard ---
-export async function getDashboardData(statusFilter?: string, searchCode?: string) {
+export type SortOption = 'created_desc' | 'created_asc' | 'pickup_asc' | 'pickup_desc';
+
+export async function getDashboardData(statusFilter?: string, searchCode?: string, sort?: SortOption) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
 
@@ -47,10 +49,15 @@ export async function getDashboardData(statusFilter?: string, searchCode?: strin
         where.pickupCode = searchCode;
     }
 
+    let orderBy: any = { createdAt: 'desc' };
+    if (sort === 'created_asc') orderBy = { createdAt: 'asc' };
+    if (sort === 'pickup_asc') orderBy = { pickupTime: 'asc' }; // Note: pickupTime is string "HH:MM", works for same-day sorting usually.
+    if (sort === 'pickup_desc') orderBy = { pickupTime: 'desc' };
+
     const [orders, settings] = await prisma.$transaction([
         prisma.shopOrder.findMany({
             where,
-            orderBy: { createdAt: 'desc' },
+            orderBy,
             include: { items: true }
         }),
         prisma.settings.findUnique({ where: { id: 1 } })
@@ -264,8 +271,8 @@ export async function updateAllOrderStatuses(targetStatus: string) {
     if (!isAuth) throw new Error('Unauthorized');
 
     // Only allow setting to PAID for now (as requested)
-    if (targetStatus !== 'PAID') {
-        throw new Error('Solo conversione a PAID supportata in massa per ora.');
+    if (targetStatus !== 'READY') {
+        throw new Error('Solo conversione a READY supportata in massa per ora.');
     }
 
     // Update all orders that are NOT already DELIVERED (and implied not CANCELLED if we want to be safe, but request said "if an order is already in this status or in a next status")
@@ -287,7 +294,7 @@ export async function updateAllOrderStatuses(targetStatus: string) {
     await prisma.shopOrder.updateMany({
         where: {
             status: {
-                notIn: ['PAID', 'DELIVERED', 'CANCELLED']
+                notIn: ['READY', 'DELIVERED', 'CANCELLED']
             }
         },
         data: { status: targetStatus }
@@ -301,7 +308,7 @@ export async function updateAllOrderStatuses(targetStatus: string) {
     const candidates = await prisma.shopOrder.findMany({
         where: {
             status: {
-                notIn: ['PAID', 'DELIVERED', 'CANCELLED'] // Assuming we only bulk-pay unpaid things
+                notIn: ['READY', 'DELIVERED', 'CANCELLED'] // Assuming we only bulk-pay unpaid things
             }
         }
     });

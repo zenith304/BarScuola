@@ -58,7 +58,7 @@ export async function createOrder(input: CreateOrderInput) {
     try {
         const settings = await prisma.settings.findUnique({ where: { id: 1 } });
         if (!settings?.orderingEnabled) {
-            throw new Error('Le ordinazioni sono chiuse administrativamente.');
+            return { error: 'Le ordinazioni sono chiuse administrativamente.' };
         }
 
         const now = new Date();
@@ -76,12 +76,12 @@ export async function createOrder(input: CreateOrderInput) {
         const orderEndTimeVal = orderEndHour * 60 + orderEndMinute;
 
         if (currentTimeVal < orderStartTimeVal || currentTimeVal > orderEndTimeVal) {
-            throw new Error(`Ordinazioni chiuse. (Orario: ${settings.orderStartTime} - ${settings.orderEndTime})`);
+            return { error: `Ordinazioni chiuse. (Orario: ${settings.orderStartTime} - ${settings.orderEndTime})` };
         }
 
         // Validate Pickup Time
         if (!input.pickupTime) {
-            throw new Error('Orario di ritiro mancante.');
+            return { error: 'Orario di ritiro mancante.' };
         }
 
         const [pickupHour, pickupMinute] = input.pickupTime.split(':').map(Number);
@@ -94,7 +94,7 @@ export async function createOrder(input: CreateOrderInput) {
         const pickupEndTimeVal = pickupEndHour * 60 + pickupEndMinute;
 
         if (pickupTimeVal < pickupStartTimeVal || pickupTimeVal > pickupEndTimeVal) {
-            throw new Error(`Orario di ritiro non valido. Scegli tra ${settings.pickupStartTime} e ${settings.pickupEndTime}`);
+            return { error: `Orario di ritiro non valido. Scegli tra ${settings.pickupStartTime} e ${settings.pickupEndTime}` };
         }
 
         // 2. Calculate Total & Validate Stock (optional)
@@ -103,8 +103,8 @@ export async function createOrder(input: CreateOrderInput) {
 
         for (const item of input.cart) {
             const product = await prisma.product.findUnique({ where: { id: item.productId } });
-            if (!product) throw new Error(`Prodotto non trovato: ${item.productId}`);
-            if (!product.isAvailable) throw new Error(`Prodotto non disponibile: ${product.name}`);
+            if (!product) return { error: `Prodotto non trovato: ${item.productId}` };
+            if (!product.isAvailable) return { error: `Prodotto non disponibile: ${product.name}` };
 
             totalCents += product.priceCents * item.qty;
             orderItemsData.push({
@@ -137,7 +137,7 @@ export async function createOrder(input: CreateOrderInput) {
             attempts++;
         }
 
-        if (!unique) throw new Error('Impossibile generare codice univoco. Riprova.');
+        if (!unique) return { error: 'Impossibile generare codice univoco. Riprova.' };
 
         // 4. Create Order (Status: PENDING_PAYMENT)
         const order = await prisma.shopOrder.create({
@@ -170,7 +170,7 @@ export async function createOrder(input: CreateOrderInput) {
         }));
 
         if (!process.env.NEXT_PUBLIC_APP_URL) {
-            throw new Error('NEXT_PUBLIC_APP_URL not set in environment variables');
+            return { error: 'NEXT_PUBLIC_APP_URL not set in environment variables' };
         }
 
         const session = await stripe.checkout.sessions.create({
@@ -186,13 +186,15 @@ export async function createOrder(input: CreateOrderInput) {
         });
 
         if (!session.url) {
-            throw new Error('Errore nella creazione del pagamento Stripe.');
+            return { error: 'Errore nella creazione del pagamento Stripe.' };
         }
 
         return { url: session.url, orderId: order.id };
-    } catch (error) {
+        return { url: session.url, orderId: order.id };
+    } catch (error: any) {
         console.error('Error in createOrder:', error);
-        throw error;
+        // Instead of throwing, return the error message
+        return { error: error.message || 'Si è verificato un errore durante la creazione dell\'ordine.' };
     }
 }
 

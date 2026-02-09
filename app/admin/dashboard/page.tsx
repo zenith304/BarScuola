@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { ShopOrder, OrderItem, PrintJob } from '@prisma/client';
 import { DeleteAllOrdersButton } from '@/app/components/admin/DeleteAllOrdersButton';
-import { MarkAllPaidButton } from '@/app/components/admin/MarkAllPaidButton';
+import { MarkAllReadyButton } from '@/app/components/admin/MarkAllPaidButton';
 
 
 
@@ -13,9 +13,9 @@ export const dynamic = 'force-dynamic';
 
 type DashboardOrder = ShopOrder & { items: OrderItem[] };
 
-export default async function AdminDashboard({ searchParams }: { searchParams: { status?: string, q?: string } }) {
+export default async function AdminDashboard({ searchParams }: { searchParams: { status?: string, q?: string, sort?: string } }) {
     // Await searchParams as required in Next.js 15
-    const { status, q } = await searchParams;
+    const { status, q, sort } = await searchParams;
 
     // Fetch Orders and Revenue
     let orders: DashboardOrder[] = [];
@@ -23,7 +23,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
     let lifetimeRevenueCents = 0;
 
     try {
-        const data = await getDashboardData(status, q);
+        const data = await getDashboardData(status, q, sort as any);
         orders = data.orders;
         dailyRevenueCents = data.dailyRevenueCents;
         lifetimeRevenueCents = data.lifetimeRevenueCents;
@@ -39,7 +39,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
             <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold text-gray-900">Dashboard Ordini</h1>
                 <div className="flex space-x-2">
-                    <MarkAllPaidButton />
+                    <MarkAllReadyButton />
                     <DeleteAllOrdersButton />
                     <form action={async () => { 'use server';  /* handled by Link or form */ }}>
                         {/* Refresh button just reloads page or revalidates */}
@@ -73,19 +73,46 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     />
                     <Button type="submit" size="sm">Cerca</Button>
                 </form>
-                <div className="flex gap-2 overflow-x-auto">
-                    {['ALL', 'PAID', 'READY', 'DELIVERED', 'CANCELLED'].map(s => (
-                        <a
-                            key={s}
-                            href={`/admin/dashboard?status=${s}`}
-                            className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${(status === s || (!status && s === 'ALL'))
-                                ? 'bg-blue-100 text-blue-800'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                        >
-                            {s}
-                        </a>
-                    ))}
+                <div className="flex flex-col gap-2">
+                    <div className="flex gap-2 overflow-x-auto">
+                        {['ALL', 'PAID', 'READY', 'DELIVERED', 'CANCELLED'].map(s => (
+                            <a
+                                key={s}
+                                href={`/admin/dashboard?status=${s}&q=${q || ''}&sort=${sort || ''}`}
+                                className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${(status === s || (!status && s === 'ALL'))
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    }`}
+                            >
+                                {s}
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Sorting */}
+            <div className="flex justify-end gap-2 items-center">
+                <span className="text-sm font-medium text-gray-700">Ordina per:</span>
+                <div className="flex gap-2">
+                    <a
+                        href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=created_desc`}
+                        className={`px-3 py-1 rounded text-xs font-medium border ${(!sort || sort === 'created_desc') ? 'bg-blue-100 border-blue-200 text-blue-800' : 'bg-white border-gray-100 text-gray-600'}`}
+                    >
+                        Più Recenti
+                    </a>
+                    <a
+                        href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=created_asc`}
+                        className={`px-3 py-1 rounded text-xs font-medium border ${(sort === 'created_asc') ? 'bg-blue-100 border-blue-200 text-blue-800' : 'bg-white border-gray-100 text-gray-600'}`}
+                    >
+                        Più Vecchi
+                    </a>
+                    <a
+                        href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=pickup_asc`}
+                        className={`px-3 py-1 rounded text-xs font-medium border ${(sort === 'pickup_asc') ? 'bg-blue-100 border-blue-200 text-blue-800' : 'bg-white border-gray-100 text-gray-600'}`}
+                    >
+                        Orario Ritiro
+                    </a>
                 </div>
             </div>
 
