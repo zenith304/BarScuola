@@ -328,7 +328,7 @@ export async function getPrintJobs() {
 
     return await prisma.printJob.findMany({
         where: { status: 'QUEUED' },
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: 'desc' }, // Newest first
         include: { order: true }
     });
 }
