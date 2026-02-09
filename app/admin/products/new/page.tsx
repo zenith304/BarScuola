@@ -45,7 +45,10 @@ export default function NewProductPage() {
             <h1 className="text-2xl font-bold mb-6 text-gray-900">Nuovo Prodotto</h1>
             <Card className="p-6">
                 <form action={clientAction} className="space-y-4 text-gray-900">
-                    <Input name="name" label="Nome" required />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                        <Input name="name" required />
+                    </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
@@ -75,10 +78,20 @@ export default function NewProductPage() {
                         <p className="text-xs text-gray-500 mt-1">Categorizza il prodotto per tipo (es. Salse, Bevande)</p>
                     </div>
 
-                    <Input name="price" type="number" label="Prezzo (in CENTESIMI, es. 350 per 3.50€)" required />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Prezzo (in CENTESIMI, es. 350 per 3.50€)</label>
+                        <Input name="price" type="number" required />
+                    </div>
 
-                    <Input name="description" label="Descrizione" />
-                    <Input name="allergens" label="Allergeni" />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Descrizione</label>
+                        <Input name="description" />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Allergeni</label>
+                        <Input name="allergens" />
+                    </div>
 
                     <div className="flex items-center gap-2">
                         <input type="checkbox" name="isAvailable" id="avail" defaultChecked />

@@ -22,23 +22,31 @@ export default function AdminLoginPage() {
                 <h1 className="text-2xl font-bold text-center mb-6 text-gray-900">Admin Login</h1>
 
                 <form action={handleSubmit} className="space-y-6">
-                    <Input
-                        name="email"
-                        type="email"
-                        label="Email"
-                        required
-                        autoComplete="email"
-                        placeholder="email@domain.com"
-                        className="text-gray-900"
-                    />
-                    <Input
-                        name="password"
-                        type="password"
-                        label="Password"
-                        required
-                        autoComplete="current-password"
-                        className="text-gray-900"
-                    />
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                            Email
+                        </label>
+                        <Input
+                            name="email"
+                            type="email"
+                            required
+                            autoComplete="email"
+                            placeholder="email@domain.com"
+                            className="text-gray-900"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                            Password
+                        </label>
+                        <Input
+                            name="password"
+                            type="password"
+                            required
+                            autoComplete="current-password"
+                            className="text-gray-900"
+                        />
+                    </div>
 
                     {error && <div className="text-red-500 text-sm text-center">{error}</div>}
 
