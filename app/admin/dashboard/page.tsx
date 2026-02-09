@@ -125,6 +125,11 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 <div className="text-gray-900">
                                     <div className="text-3xl font-black">{order.pickupCode}</div>
                                     <div className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleTimeString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' })} - {order.studentName} ({order.studentClass})</div>
+                                    {order.pickupTime && (
+                                        <div className="text-lg font-bold text-blue-600 mt-1">
+                                            Ritiro: {order.pickupTime}
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="text-right">
                                     <div className="font-bold text-lg text-gray-900">{(order.totalCents / 100).toFixed(2)}€</div>

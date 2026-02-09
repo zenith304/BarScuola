@@ -237,7 +237,14 @@ export async function finalizeOrder(orderId: string) {
         const now = new Date();
         const dateStr = now.toLocaleDateString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' });
 
-        let printText = `ORDINE BAR\n${dateStr}\n\nCODICE RITIRO: ${order.pickupCode}\n`;
+        let printText = `ORDINE BAR\n${dateStr}\n\n`;
+        printText += `################################\n`;
+        printText += `#        CODICE RITIRO         #\n`;
+        printText += `#                              #\n`;
+        printText += `#             ${order.pickupCode}             #\n`;
+        printText += `#                              #\n`;
+        printText += `################################\n\n`;
+
         if (order.pickupTime) {
             printText += `ORARIO RITIRO: ${order.pickupTime}\n\n`;
         } else {

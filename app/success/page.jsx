@@ -50,7 +50,7 @@ export default async function Success({ searchParams }) {
               <Mail className="w-4 h-4" />
               Hai bisogno di aiuto?
             </p>
-            <a href="mailto:[EMAIL_ADDRESS]" className="text-blue-600 font-medium hover:underline">
+            <a href="mailto:rappstudenti@itisrossi.vi.it" className="text-blue-600 font-medium hover:underline">
               rappstudenti@itisrossi.vi.it
             </a>
           </div>
