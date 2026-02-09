@@ -38,7 +38,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Dashboard</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
                     <p className="text-slate-500 dark:text-slate-400">Gestisci gli ordini e monitora l'attività.</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -134,7 +134,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                         <Card key={order.id} className="p-6 border-l-4 border-t border-r border-b border-l-blue-500">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="text-gray-900">
-                                    <div className="text-3xl font-black">{order.pickupCode}</div>
+                                    <div className="text-3xl font-black text-gray-900 dark:text-white">{order.pickupCode}</div>
                                     <div className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleTimeString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' })} - {order.studentName} ({order.studentClass})</div>
                                     {order.pickupTime && (
                                         <div className="text-lg font-bold text-blue-600 mt-1">

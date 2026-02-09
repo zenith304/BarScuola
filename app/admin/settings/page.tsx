@@ -27,23 +27,23 @@ export default async function SettingsPage() {
                 <form action={saveSettings} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-gray-900 border-b pb-2">Orario Ordinazioni</h3>
+                            <h3 className="font-semibold text-gray-900 dark:text-white border-b pb-2">Orario Ordinazioni</h3>
                             <div className="space-y-1">
-                                <label className="font-medium text-gray-900">Inizio Ordini</label>
+                                <label className="font-medium text-gray-900 dark:text-white">Inizio Ordini</label>
                                 <Input
                                     name="orderStartTime"
                                     type="time"
-                                    className="text-gray-900"
+                                    className="text-gray-900 dark:text-white"
                                     defaultValue={settings?.orderStartTime || '00:00'}
                                     required
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="font-medium text-gray-900">Fine Ordini</label>
+                                <label className="font-medium text-gray-900 dark:text-white">Fine Ordini</label>
                                 <Input
                                     name="orderEndTime"
                                     type="time"
-                                    className="text-gray-900"
+                                    className="text-gray-900 dark:text-white"
                                     defaultValue={settings?.orderEndTime || '10:00'}
                                     required
                                 />
@@ -51,23 +51,23 @@ export default async function SettingsPage() {
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="font-semibold text-gray-900 border-b pb-2">Orario Ritiro</h3>
+                            <h3 className="font-semibold text-gray-900 dark:text-white border-b pb-2">Orario Ritiro</h3>
                             <div className="space-y-1">
-                                <label className="font-medium text-gray-900">Inizio Ritiro</label>
+                                <label className="font-medium text-gray-900 dark:text-white">Inizio Ritiro</label>
                                 <Input
                                     name="pickupStartTime"
                                     type="time"
-                                    className="text-gray-900"
+                                    className="text-gray-900 dark:text-white"
                                     defaultValue={settings?.pickupStartTime || '13:00'}
                                     required
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="font-medium text-gray-900">Fine Ritiro</label>
+                                <label className="font-medium text-gray-900 dark:text-white">Fine Ritiro</label>
                                 <Input
                                     name="pickupEndTime"
                                     type="time"
-                                    className="text-gray-900"
+                                    className="text-gray-900 dark:text-white"
                                     defaultValue={settings?.pickupEndTime || '14:00'}
                                     required
                                 />
@@ -84,7 +84,7 @@ export default async function SettingsPage() {
                             className="h-5 w-5 text-blue-600 rounded"
                         />
                         <div>
-                            <label htmlFor="enabled" className="font-medium text-gray-900">Abilita Ordinazioni</label>
+                            <label htmlFor="enabled" className="font-medium text-gray-900 dark:text-white">Abilita Ordinazioni</label>
                             <p className="text-xs text-gray-500">Se disabilitato, nessuno potrà ordinare indipendentemente dall'orario.</p>
                         </div>
                     </div>

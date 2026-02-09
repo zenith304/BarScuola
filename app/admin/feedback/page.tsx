@@ -18,7 +18,7 @@ export default async function AdminFeedbackPage() {
                             <span>{new Date(item.createdAt).toLocaleString('it-IT', { timeZone: 'Europe/Rome' })}</span>
                             <span className="px-2 py-0.5 bg-gray-100 rounded text-xs">{item.status}</span>
                         </div>
-                        <p className="text-gray-900 whitespace-pre-wrap">{item.text}</p>
+                        <p className="text-gray-900 dark:text-white whitespace-pre-wrap">{item.text}</p>
                     </Card>
                 ))}
 
