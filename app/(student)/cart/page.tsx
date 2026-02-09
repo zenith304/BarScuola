@@ -113,9 +113,9 @@ export default function CartPage() {
                 {items.map((item) => (
                     <Card key={`${item.productId}-${item.selectedOptions || 'none'}`} className="p-4 flex items-center justify-between">
                         <div>
-                            <h3 className="font-medium text-gray-900">{item.name}</h3>
+                            <h3 className="font-medium text-foreground">{item.name}</h3>
                             {item.selectedOptions && (
-                                <p className="text-xs text-gray-600 mt-1">{item.selectedOptions}</p>
+                                <p className="text-xs text-muted-foreground mt-1">{item.selectedOptions}</p>
                             )}
                             <p className="text-sm text-gray-900">{(item.priceCents / 100).toFixed(2)}€ x {item.qty}</p>
                         </div>
@@ -139,15 +139,15 @@ export default function CartPage() {
                 ))}
 
                 <div className="flex justify-end pt-4 border-t">
-                    <div className="text-xl font-bold text-gray-900">Totale: {(totalCents / 100).toFixed(2)}€</div>
+                    <div className="text-xl font-bold text-foreground">Totale: {(totalCents / 100).toFixed(2)}€</div>
                 </div>
             </div>
 
             <Card className="p-6">
-                <h2 className="text-lg font-medium mb-4 text-gray-900">Dettagli Studente</h2>
+                <h2 className="text-lg font-medium mb-4 text-foreground">Dettagli Studente</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Nome e Cognome
                         </label>
                         <Input
@@ -159,7 +159,7 @@ export default function CartPage() {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Classe
                         </label>
                         <Input
@@ -172,9 +172,9 @@ export default function CartPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-1">
+                        <label className="block text-sm font-medium text-foreground mb-1">
                             Orario di Ritiro
-                            {settings && <span className="text-gray-500 font-normal ml-1">({settings.pickupStartTime} - {settings.pickupEndTime})</span>}
+                            {settings && <span className="text-muted-foreground font-normal ml-1">({settings.pickupStartTime} - {settings.pickupEndTime})</span>}
                         </label>
                         <input
                             type="time"
@@ -186,7 +186,7 @@ export default function CartPage() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-1">Note (opzionale)</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Note (opzionale)</label>
                         <textarea
                             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                             rows={3}

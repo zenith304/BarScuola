@@ -45,18 +45,18 @@ export default function MyOrdersPage() {
 
     return (
         <div className="max-w-3xl mx-auto space-y-6">
-            <h1 className="text-2xl font-bold text-gray-900">I miei ordini recenti</h1>
+            <h1 className="text-2xl font-bold text-foreground">I miei ordini recenti</h1>
 
             {orders.map((order) => (
                 <Card key={order.id} className="p-4 border-l-4 border-l-blue-500">
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleString('it-IT')}</p>
-                            <h3 className="font-bold text-lg mt-1 text-gray-900">Codice Ritiro: <span className="text-xl text-gray-900">{order.pickupCode}</span></h3>
+                            <p className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleString('it-IT')}</p>
+                            <h3 className="font-bold text-lg mt-1 text-foreground">Codice Ritiro: <span className="text-xl text-foreground">{order.pickupCode}</span></h3>
                             {order.pickupTime && (
-                                <p className="text-sm font-medium text-gray-700">Ritiro alle: <span className="font-bold">{order.pickupTime}</span></p>
+                                <p className="text-sm font-medium text-muted-foreground">Ritiro alle: <span className="font-bold">{order.pickupTime}</span></p>
                             )}
-                            <p className="text-sm font-medium mt-1 text-gray-900">Stato: <span className={`
+                            <p className="text-sm font-medium mt-1 text-foreground">Stato: <span className={`
                  px-2 py-0.5 rounded text-xs uppercase
                  ${order.status === 'PAID' ? 'bg-green-100 text-green-800' : ''}
                  ${order.status === 'IN_PREPARATION' ? 'bg-yellow-100 text-yellow-800' : ''}
@@ -65,7 +65,7 @@ export default function MyOrdersPage() {
                `}>{order.status}</span></p>
                         </div>
                         <div className="text-right">
-                            <p className="font-bold text-gray-900">{(order.totalCents / 100).toFixed(2)}€</p>
+                            <p className="font-bold text-foreground">{(order.totalCents / 100).toFixed(2)}€</p>
                             {order.status === 'PAID' ? (
                                 <Link href={`/order/${order.id}`} className="text-sm text-blue-600 hover:underline">Dettagli</Link>
                             ) : (

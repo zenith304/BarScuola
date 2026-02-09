@@ -41,16 +41,16 @@ export default async function MenuPage() {
           <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">{cat}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {menu[cat].map((product: Product) => (
-              <Card key={product.id} className="p-0 flex flex-col justify-between h-full group overflow-hidden border-slate-200 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-900 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+              <Card key={product.id} className="p-0 flex flex-col justify-between h-full group overflow-hidden border-border hover:border-blue-200 dark:hover:border-blue-900 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{product.name}</h3>
+                    <h3 className="text-lg font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{product.name}</h3>
                     <span className="font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded text-sm whitespace-nowrap">
                       {(product.priceCents / 100).toFixed(2)}€
                     </span>
                   </div>
                   {product.description && (
-                    <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-3">{product.description}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-3">{product.description}</p>
                   )}
                   {product.allergens && (
                     <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/20 text-xs font-medium text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30">
@@ -59,12 +59,12 @@ export default async function MenuPage() {
                     </div>
                   )}
                 </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800">
+                <div className="p-4 bg-muted/30 border-t border-border">
                   <AddToCartButton product={product} />
                 </div>
               </Card>
             ))}
-            {menu[cat].length === 0 && <p className="text-gray-400 italic">Nessun prodotto disponibile.</p>}
+            {menu[cat].length === 0 && <p className="text-muted-foreground italic">Nessun prodotto disponibile.</p>}
           </div>
         </section>
       ))}
