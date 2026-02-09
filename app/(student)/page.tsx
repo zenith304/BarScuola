@@ -6,6 +6,9 @@ import { AddToCartButton } from '@/app/components/AddToCartButton'; // We need t
 import { FloatingCartButton } from '@/app/components/FloatingCartButton';
 
 
+// Force dynamic to ensure time/settings are always fresh
+export const dynamic = 'force-dynamic';
+
 export default async function MenuPage() {
   const menu = await getMenu();
   const settings = await getSettings();

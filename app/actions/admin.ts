@@ -255,6 +255,80 @@ export async function updateSettings(
         }
     });
     revalidatePath('/admin/settings');
+    revalidatePath('/'); // Revalidate home/menu to update time restrictions immediately
+    revalidatePath('/(student)', 'layout'); // Ensure student layout is fresh
+}
+
+export async function updateAllOrderStatuses(targetStatus: string) {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    // Only allow setting to PAID for now (as requested)
+    if (targetStatus !== 'PAID') {
+        throw new Error('Solo conversione a PAID supportata in massa per ora.');
+    }
+
+    // Update all orders that are NOT already DELIVERED (and implied not CANCELLED if we want to be safe, but request said "if an order is already in this status or in a next status")
+    // Request: "if an order is "DELIVERED" ... don't change it"
+    // Also "if an order is already... PAID... don't change it"
+    // So we update where status is NOT 'DELIVERED' and NOT 'PAID' (and maybe not 'CANCELLED')
+
+    // Actually, usually we turn PENDING_PAYMENT or IN_PREPARATION or READY to PAID.
+    // Let's assume we want to mark all PENDING/PREP/READY as PAID.
+    // The user said: "set all the order to "PAID" or "DELIVERED", obviusly if an order is already in this status on in a next status, don't change it"
+
+    // If target is PAID:
+    // Update IDs where status is NOT 'PAID' AND NOT 'DELIVERED' AND NOT 'CANCELLED'.
+    // Wait, if it's 'READY', going to 'PAID' is backwards? No, PAID is usually first step.
+    // Actually, "PAID" usually means "Paid online". If they pay cash, admin marks as PAID.
+    // So if it's READY (cooked), it might still be unpaid?
+    // Let's stick to: Update where status != DELIVERED and status != CANCELLED and status != PAID.
+
+    await prisma.shopOrder.updateMany({
+        where: {
+            status: {
+                notIn: ['PAID', 'DELIVERED', 'CANCELLED']
+            }
+        },
+        data: { status: targetStatus }
+    });
+
+    // Revenue increment logic is complex for bulk update because we need to know WHICH ones changed to increment revenue.
+    // updateMany doesn't return the records.
+    // So we should find, then update.
+
+    // 1. Find candidates
+    const candidates = await prisma.shopOrder.findMany({
+        where: {
+            status: {
+                notIn: ['PAID', 'DELIVERED', 'CANCELLED'] // Assuming we only bulk-pay unpaid things
+            }
+        }
+    });
+
+    if (candidates.length === 0) {
+        return;
+    }
+
+    // 2. Transaction to update and increment revenue
+    await prisma.$transaction(async (tx) => {
+        for (const order of candidates) {
+            await tx.shopOrder.update({
+                where: { id: order.id },
+                data: { status: targetStatus }
+            });
+            // Increment revenue logic (same as updateOrderStatus/finalize)
+            // Only increment if we are moving to PAID? 
+            // The user request for button is "All the order PAID".
+
+            await tx.settings.update({
+                where: { id: 1 },
+                data: { lifetimeRevenueCents: { increment: order.totalCents } }
+            });
+        }
+    });
+
+    revalidatePath('/admin/dashboard');
 }
 
 // --- Print Jobs ---
