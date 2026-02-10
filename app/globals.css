@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Light Mode - Blue/Indigo/Slate Theme */
   --background: 220 30% 98%;
