@@ -1,9 +1,10 @@
 'use client';
 
 import { Product } from '@prisma/client';
-import { useCart } from '@/app/context/CartContext';
+import { useCart, CartItem } from '@/app/context/CartContext';
 import { Button } from './ui/Button';
 import { ProductOptionsModal } from './ProductOptionsModal';
+import { RemoveVariantModal } from './RemoveVariantModal';
 import { useState } from 'react';
 
 interface AddToCartButtonProps {
@@ -11,17 +12,33 @@ interface AddToCartButtonProps {
 }
 
 export function AddToCartButton({ product }: AddToCartButtonProps) {
-    const { addToCart, updateQty, items, removeFromCart } = useCart();
-    const [showModal, setShowModal] = useState(false);
-    const inCart = items.find(i => i.productId === product.id);
+    const { addToCart, updateQty, items } = useCart();
+    const [showOptionsModal, setShowOptionsModal] = useState(false);
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
+
+    // Get all cart items matching this product ID
+    const productVariants = items.filter(i => i.productId === product.id);
+    const totalQty = productVariants.reduce((sum, item) => sum + item.qty, 0);
 
     const hasOptions = product.options && product.options.length > 0;
 
     function handleAddClick() {
         if (hasOptions) {
-            setShowModal(true);
+            // Always open modal for products with options to force explicit selection
+            setShowOptionsModal(true);
         } else {
+            // Simple increment for products without options
             addToCart(product);
+        }
+    }
+
+    function handleRemoveClick() {
+        if (productVariants.length > 1) {
+            // Multiple variants exist, ask user which one to remove
+            setShowRemoveModal(true);
+        } else if (productVariants.length === 1) {
+            // Only one variant, just decrement it
+            updateQty(product.id, -1, productVariants[0].selectedOptions);
         }
     }
 
@@ -31,67 +48,61 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
             .map(([name, choices]) => `${name}: ${choices.join(', ')}`)
             .join('; ');
         addToCart(product, formatted);
-        setShowModal(false);
+        setShowOptionsModal(false);
+    }
+
+    function handleConfirmRemove(variant: CartItem) {
+        updateQty(product.id, -1, variant.selectedOptions);
+        setShowRemoveModal(false);
     }
 
     return (
         <div className="w-full space-y-2">
-            {(inCart && (!hasOptions || items.filter(i => i.productId === product.id).length === 1)) ? (
+            {totalQty > 0 ? (
                 <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-1 border border-emerald-100 dark:border-emerald-900/30">
                     <Button
                         size="sm"
                         variant="ghost"
                         className="h-8 w-8 p-0 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-300"
-                        onClick={() => updateQty(product.id, -1, inCart.selectedOptions)}
+                        onClick={handleRemoveClick}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-minus"><path d="M5 12h14" /></svg>
                     </Button>
-                    <span className="font-bold text-emerald-900 dark:text-emerald-100 w-8 text-center">{inCart.qty}</span>
+                    <span className="font-bold text-emerald-900 dark:text-emerald-100 min-w-8 text-center">{totalQty}</span>
                     <Button
                         size="sm"
                         variant="ghost"
                         className="h-8 w-8 p-0 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-300"
-                        onClick={() => {
-                            if (hasOptions) {
-                                // For options, we can't just "add" without confirming options. 
-                                // But since we are in "single variant mode", maybe we assume same options?
-                                // Safer: Trigger modal again? Or simply increment if user wants SAME thing?
-                                // User asked for "+", usually means "Same Thing".
-                                updateQty(product.id, 1, inCart.selectedOptions);
-                            } else {
-                                addToCart(product);
-                            }
-                        }}
+                        onClick={handleAddClick}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
                     </Button>
                 </div>
             ) : (
-                <>
-                    <Button
-                        className="w-full"
-                        onClick={handleAddClick}
-                        disabled={!product.isAvailable}
-                    >
-                        {product.isAvailable ? 'Aggiungi al carrello' : 'Non disponibile'}
-                    </Button>
-
-                    {inCart && hasOptions && (
-                        <div className="text-center">
-                            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded inline-block">
-                                ✓ Aggiunto ({inCart.qty})
-                            </span>
-                        </div>
-                    )}
-                </>
+                <Button
+                    className="w-full"
+                    onClick={handleAddClick}
+                    disabled={!product.isAvailable}
+                >
+                    {product.isAvailable ? 'Aggiungi al carrello' : 'Non disponibile'}
+                </Button>
             )}
 
-            {showModal && (
+            {showOptionsModal && (
                 <ProductOptionsModal
                     productName={product.name}
                     options={product.options}
                     onConfirm={handleConfirmOptions}
-                    onCancel={() => setShowModal(false)}
+                    onCancel={() => setShowOptionsModal(false)}
+                />
+            )}
+
+            {showRemoveModal && (
+                <RemoveVariantModal
+                    productName={product.name}
+                    variants={productVariants}
+                    onRemove={handleConfirmRemove}
+                    onCancel={() => setShowRemoveModal(false)}
                 />
             )}
         </div>

@@ -99,7 +99,7 @@ export default function CartPage() {
     if (items.length === 0) {
         return (
             <div className="text-center py-10">
-                <h2 className="text-xl font-medium text-gray-900">Il tuo carrello è vuoto</h2>
+                <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">Il tuo carrello è vuoto</h2>
                 <Button className="mt-4" onClick={() => router.push('/')}>Vai al Menu</Button>
             </div>
         );

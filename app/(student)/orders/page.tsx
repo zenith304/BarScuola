@@ -29,12 +29,12 @@ export default function MyOrdersPage() {
         loadOrders();
     }, []);
 
-    if (loading) return <div className="text-center py-10 text-gray-900">Caricamento...</div>;
+    if (loading) return <div className="text-center py-10 text-gray-900 dark:text-gray-100">Caricamento...</div>;
 
     if (orders.length === 0) {
         return (
             <div className="text-center py-10 text-gray-900 ">
-                <h2 className="text-xl font-medium text-gray-900">Nessun ordine recente</h2>
+                <h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">Nessun ordine recente</h2>
                 <p className="text-gray-500 mb-4">I tuoi ordini appariranno qui.</p>
                 <Link href="/">
                     <Button>Vai al Menu</Button>
