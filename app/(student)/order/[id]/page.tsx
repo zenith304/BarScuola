@@ -36,7 +36,7 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
                 <div className="text-6xl font-black text-foreground my-4 tracking-widest">{order.pickupCode}</div>
                 <p className="text-sm text-muted-foreground mb-6">Mostra questo codice al banco per ritirare.</p>
 
-                <div className="mb-4 text-black dark:text-white">
+                <div className="mb-4 text-foreground">
                     <LiveClock />
                 </div>
 
