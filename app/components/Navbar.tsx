@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { logoutAdmin } from '@/app/actions/admin';
 import { CartCount } from './CartCount';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from './ui/Button';
@@ -65,6 +66,11 @@ export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
                                     <NavLink href="/admin/products">Prodotti</NavLink>
                                     <NavLink href="/admin/feedback">Feedback</NavLink>
                                     <NavLink href="/admin/settings">Impostazioni</NavLink>
+                                    <form action={logoutAdmin} className="inline-flex">
+                                        <button type="submit" className="px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all">
+                                            Logout
+                                        </button>
+                                    </form>
                                 </>
                             )}
                         </div>
@@ -107,6 +113,11 @@ export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
                             <MobileNavLink href="/admin/products" onClick={() => setIsMobileMenuOpen(false)}>Prodotti</MobileNavLink>
                             <MobileNavLink href="/admin/feedback" onClick={() => setIsMobileMenuOpen(false)}>Feedback</MobileNavLink>
                             <MobileNavLink href="/admin/settings" onClick={() => setIsMobileMenuOpen(false)}>Impostazioni</MobileNavLink>
+                            <form action={logoutAdmin} className="w-full">
+                                <button type="submit" className="w-full text-left px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    Logout
+                                </button>
+                            </form>
                         </>
                     )}
                 </div>

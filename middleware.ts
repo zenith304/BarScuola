@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
             return NextResponse.next();
         }
 
-        const adminSession = request.cookies.get('admin_session')?.value;
+        const adminSession = request.cookies.get('bar_admin_session_v1')?.value;
 
         if (adminSession !== 'true') {
             return NextResponse.redirect(new URL('/admin/login', request.url));

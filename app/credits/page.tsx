@@ -88,21 +88,23 @@ export default function CreditsPage() {
                         <br />
                         <p>PANINI ORDINATI ............... {stats.panini}</p>
                         <p>SOLDI SPESI ................... {stats.money} €</p>
-                        <p>CAFFÈ CONSUMATI ............... {stats.coffees}</p>
-                        <p>BUG RISOLTI ................... {stats.bugs}+</p>
+                        <p>CALORIE ASSIMILATE ............... {stats.coffees}</p>
+                        <p>BUG CREATI ................... {stats.bugs}+</p>
                     </div>
 
                     <br />
                     <p>CREDITI</p>
                     <br />
                     <p>Sviluppatore Capo</p>
-                    <p className="text-white">LUCA</p>
+                    <p className="text-white">LUCA DAL SASSO</p>
                     <br />
                     <p>Assistente AI</p>
                     <p className="text-white">ANTIGRAVITY</p>
                     <br />
                     <p>Design & Concept</p>
-                    <p className="text-white">BAR SCUOLA TEAM</p>
+                    <p className="text-white">LUCA DAL SASSO</p>
+                    <p className="text-white">LUCA ROSSI</p>
+                    <p className="text-white">BAR ITIS ROSSI</p>
                     <br />
                     <br />
                     <p>Grazie per aver giocato.</p>
