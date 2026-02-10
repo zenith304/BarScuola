@@ -32,13 +32,13 @@ export default async function MenuPage() {
         </h1>
         <p className="text-slate-500 dark:text-slate-400 text-lg max-w-2xl mx-auto">
           Ordina il tuo Pranzo <br className="hidden sm:inline" />
-          Servizio attivo dalle <span className="font-bold text-slate-800 dark:text-slate-00">{settings?.orderStartTime}</span> alle <span className="font-bold text-slate-800 dark:text-slate-500">{settings?.orderEndTime}</span>
+          Servizio attivo dalle <span className="font-bold text-slate-800 dark:text-slate-500">{settings?.orderStartTime}</span> alle <span className="font-bold text-slate-800 dark:text-slate-500">{settings?.orderEndTime}</span>
         </p>
       </header>
 
       {categories.map((cat) => (
         <section key={cat} id={cat} className="scroll-mt-20">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">{cat}</h2>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-slate-500 mb-4 border-b pb-2">{cat}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {menu[cat].map((product: Product) => (
               <Card key={product.id} className="p-0 flex flex-col justify-between h-full group overflow-hidden border-border hover:border-blue-200 dark:hover:border-blue-900 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">

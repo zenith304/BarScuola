@@ -63,20 +63,8 @@ export default function NewProductPage() {
                             <option value="Menu">Menu</option>
                             <option value="Altro">Altro</option>
                         </select>
-                        {category === 'Menu' && (
-                            <p className="text-xs text-blue-600 mt-1">ℹ️ Una opzione "Bevanda" sarà aggiunta automaticamente con le bevande disponibili.</p>
-                        )}
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Topic (Opzionale)</label>
-                        <input
-                            name="topic"
-                            placeholder="es. Salse, Bevande, Extra"
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Categorizza il prodotto per tipo (es. Salse, Bevande)</p>
-                    </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Prezzo (in CENTESIMI, es. 350 per 3.50€)</label>

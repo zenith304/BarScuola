@@ -9,7 +9,7 @@ export default async function AdminFeedbackPage() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold text-gray-900">Feedback Ricevuti</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Feedback Ricevuti</h1>
 
             <div className="grid gap-4">
                 {feedbackList.map((item) => (

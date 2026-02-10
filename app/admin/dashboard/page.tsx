@@ -38,7 +38,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">Dashboard</h1>
                     <p className="text-slate-500 dark:text-slate-400">Gestisci gli ordini e monitora l'attività.</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -129,7 +129,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-4">
-                    <h2 className="text-xl font-bold text-gray-900">Ordini ({orders.length})</h2>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Ordini ({orders.length})</h2>
                     {orders.map((order) => (
                         <Card key={order.id} className="p-6 border-l-4 border-t border-r border-b border-l-blue-500">
                             <div className="flex justify-between items-start mb-4">
@@ -143,7 +143,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     )}
                                 </div>
                                 <div className="text-right">
-                                    <div className="font-bold text-lg text-gray-900">{(order.totalCents / 100).toFixed(2)}€</div>
+                                    <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{(order.totalCents / 100).toFixed(2)}€</div>
                                     <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'PAID' ? 'bg-green-100 text-green-800' :
                                         order.status === 'IN_PREPARATION' ? 'bg-yellow-100 text-yellow-800' :
                                             order.status === 'READY' ? 'bg-blue-100 text-blue-800' :
@@ -205,7 +205,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
                 {/* Print Queue Side Panel */}
                 <div className="space-y-4">
-                    <h2 className="text-xl font-bold text-gray-900">Coda di Stampa ({printJobs.length})</h2>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Coda di Stampa ({printJobs.length})</h2>
                     <div className="bg-white rounded-lg shadow border border-gray-200 p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
                         {printJobs.map((job: PrintJob & { order: ShopOrder }) => (
                             <div key={job.id} className="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0">

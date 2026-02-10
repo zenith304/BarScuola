@@ -107,7 +107,7 @@ export default function CartPage() {
 
     return (
         <div className="max-w-2xl mx-auto space-y-8">
-            <h1 className="text-2xl font-bold text-gray-900">Il tuo ordine</h1>
+            <h1 className="text-2xl font-bold text-gray-400">Il tuo ordine</h1>
 
             <div className="space-y-4">
                 {items.map((item) => (
@@ -117,7 +117,7 @@ export default function CartPage() {
                             {item.selectedOptions && (
                                 <p className="text-xs text-muted-foreground mt-1">{item.selectedOptions}</p>
                             )}
-                            <p className="text-sm text-gray-900">{(item.priceCents / 100).toFixed(2)}€ x {item.qty}</p>
+                            <p className="text-sm text-gray-900 dark:text-gray-400">{(item.priceCents / 100).toFixed(2)}€ x {item.qty}</p>
                         </div>
                         <div className="flex items-center space-x-2">
                             <button
@@ -125,7 +125,7 @@ export default function CartPage() {
                                 onClick={() => updateQty(item.productId, -1, item.selectedOptions)}
                                 disabled={item.qty <= 1}
                             >-</button>
-                            <span className="w-8 text-center text-gray-900">{item.qty}</span>
+                            <span className="w-8 text-center text-gray-900 dark:text-gray-400">{item.qty}</span>
                             <button
                                 className="px-2 py-1 bg-gray-300 rounded text-gray-900"
                                 onClick={() => updateQty(item.productId, 1, item.selectedOptions)}
@@ -152,6 +152,7 @@ export default function CartPage() {
                         </label>
                         <Input
                             value={studentName}
+                            className="w-full rounded-md border border-input bg-background-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground"
                             onChange={e => setStudentName(e.target.value)}
                             placeholder="Mario Rossi"
                             required
@@ -163,6 +164,7 @@ export default function CartPage() {
                         </label>
                         <Input
                             value={studentClass}
+                            className="w-full rounded-md border border-input bg-background-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground"
                             onChange={e => setStudentClass(e.target.value)}
                             placeholder="5A"
                             required
@@ -176,7 +178,7 @@ export default function CartPage() {
                         </label>
                         <input
                             type="time"
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground"
+                            className="w-full rounded-md border border-input bg-background-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground"
                             value={pickupTime}
                             onChange={e => setPickupTime(e.target.value)}
                             required
@@ -186,7 +188,7 @@ export default function CartPage() {
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">Note (opzionale)</label>
                         <textarea
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground"
+                            className="w-full rounded-md border border-input bg-background-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground"
                             rows={3}
                             maxLength={120}
                             value={note}
