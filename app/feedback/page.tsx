@@ -31,7 +31,6 @@ export default function FeedbackPage() {
                             required
                             rows={4}
                             className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2 text-gray-900 dark:text-gray-100"
-                            placeholder="Es. Non riesco a eliminare un ordine..."
                         ></textarea>
                     </div>
                     <div className="pt-2 space-y-2">

@@ -7,15 +7,36 @@ import { Button } from './ui/Button';
 
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export function Navbar({ type = 'student' }: { type?: 'student' | 'admin' }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [clickCount, setClickCount] = useState(0);
+    const router = useRouter();
+
+    const handleLogoClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const newCount = clickCount + 1;
+        setClickCount(newCount);
+
+        if (newCount === 10) {
+            router.push('/credits');
+            setClickCount(0);
+        } else {
+            // Reset count if too slow? For now simple accum is fine, or simple timer.
+            // Let's just do simple routing for now.
+            if (newCount === 1) {
+                setTimeout(() => setClickCount(0), 5000); // 5 seconds to click 10 times
+            }
+            router.push('/');
+        }
+    };
     return (
         <nav className="sticky top-0 z-50 w-full border-b border-white/20 bg-white/80 dark:bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-background/60 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <div className="flex flex-shrink-0 items-center">
-                        <Link href={type === 'admin' ? '/admin/dashboard' : '/'} className="flex items-center gap-2 group">
+                        <Link href={type === 'admin' ? '/admin/dashboard' : '/'} className="flex items-center gap-2 group" onClick={handleLogoClick}>
                             <div className="h-8 w-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-105">
                                 B
                             </div>
