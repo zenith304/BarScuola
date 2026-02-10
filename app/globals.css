@@ -38,8 +38,8 @@
 
 .dark {
   /* Dark Mode - Deep Blue/Slate Theme */
-  --background: 222 47% 6%;
-  /* Almost black, very deep blue */
+  --background: 0 0% 0%;
+  /* Pure black */
   --foreground: 210 40% 98%;
 
   --card: 222 47% 11%;

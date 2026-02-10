@@ -32,7 +32,7 @@ export default async function MenuPage() {
         </h1>
         <p className="text-slate-500 dark:text-slate-400 text-lg max-w-2xl mx-auto">
           Ordina il tuo Pranzo <br className="hidden sm:inline" />
-          Servizio attivo dalle <span className="font-bold text-slate-800 dark:text-slate-200">{settings?.orderStartTime}</span> alle <span className="font-bold text-slate-800 dark:text-slate-500">{settings?.orderEndTime}</span>
+          Servizio attivo dalle <span className="font-bold text-slate-800 dark:text-slate-500">{settings?.orderStartTime}</span> alle <span className="font-bold text-slate-800 dark:text-slate-500">{settings?.orderEndTime}</span>
         </p>
       </header>
 
