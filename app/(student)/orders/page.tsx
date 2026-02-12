@@ -66,10 +66,12 @@ export default function MyOrdersPage() {
                         </div>
                         <div className="text-right">
                             <p className="font-bold text-foreground">{(order.totalCents / 100).toFixed(2)}€</p>
-                            {order.status === 'PAID' ? (
+                            {['PAID', 'IN_PREPARATION', 'READY'].includes(order.status) && (
                                 <Link href={`/order/${order.id}`} className="text-sm text-blue-600 hover:underline">Dettagli</Link>
-                            ) : (
-                                <><button
+                            )}
+
+                            {order.status === 'PENDING_PAYMENT' && (
+                                <button
                                     onClick={async () => {
                                         try {
                                             const { retryPayment } = await import('@/app/actions/shop');
@@ -78,10 +80,14 @@ export default function MyOrdersPage() {
                                         } catch (e) {
                                             alert('Errore nel riprovare il pagamento');
                                         }
-                                    }} className="text-sm text-blue-600 hover:underline"
+                                    }} className="text-sm text-blue-600 hover:underline mr-3"
                                 >
                                     Riprova a pagare
-                                </button><button onClick={async () => {
+                                </button>
+                            )}
+
+                            {['PENDING_PAYMENT', 'DELIVERED'].includes(order.status) && (
+                                <button onClick={async () => {
                                     try {
                                         const { deleteOrder } = await import('@/app/actions/shop');
                                         await deleteOrder(order.id);
@@ -104,7 +110,7 @@ export default function MyOrdersPage() {
                                             alert('Errore nell\'eliminare l\'ordine');
                                         }
                                     }
-                                }} className="text-sm text-red-600 hover:underline ml-3">Elimina Ordine</button></>
+                                }} className="text-sm text-red-600 hover:underline">Elimina Ordine</button>
                             )}
                         </div>
                     </div>
