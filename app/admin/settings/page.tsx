@@ -4,6 +4,7 @@ import { Button } from '@/app/components/ui/Button';
 import { Input } from '@/app/components/ui/Input';
 import { Card } from '@/app/components/ui/Card';
 import { ResetRevenueButton } from '@/app/components/admin/ResetRevenueButton';
+import { ExportButton } from '@/app/components/admin/ExportButton';
 
 
 export default async function SettingsPage() {
@@ -106,6 +107,7 @@ export default async function SettingsPage() {
                 </p>
                 <div className="flex flex-wrap gap-4">
                     <ResetRevenueButton />
+                    <ExportButton />
                 </div>
             </Card>
         </div>

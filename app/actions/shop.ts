@@ -216,6 +216,21 @@ export async function getOrdersByIds(ids: string[]) {
     });
 }
 
+export async function getOrderStatus(orderId: string) {
+    const order = await prisma.shopOrder.findUnique({
+        where: { id: orderId },
+        select: { status: true }
+    });
+    return order?.status;
+}
+
+export async function getProductsByIds(ids: string[]) {
+    return await prisma.product.findMany({
+        where: { id: { in: ids }, isAvailable: true },
+        include: { options: true }
+    });
+}
+
 export async function finalizeOrder(orderId: string) {
     try {
         const order = await prisma.shopOrder.findUnique({

@@ -53,8 +53,30 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
             </div>
 
+            {/* Navigation Bar */}
+            <nav className="flex flex-wrap gap-2 border-b border-gray-200 dark:border-slate-800 pb-4">
+                <a href="/admin/dashboard" className="px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-medium rounded-lg">
+                    Dashboard
+                </a>
+                <a href="/admin/analytics" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
+                    Analytics
+                </a>
+                <a href="/admin/stock" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
+                    Gestione Scorte
+                </a>
+                <a href="/admin/kds" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
+                    KDS (Cucina)
+                </a>
+                <a href="/admin/products" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
+                    Prodotti
+                </a>
+                <a href="/admin/settings" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
+                    Impostazioni
+                </a>
+            </nav>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white shadow-lg">
+                <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-blue-500 to-blue-600 p-6 text-white shadow-lg">
                     <div className="relative z-10">
                         <div className="text-sm font-medium text-blue-100 uppercase tracking-wider mb-1">Incasso Odierno</div>
                         <div className="text-4xl font-extrabold tracking-tight">{(dailyRevenueCents / 100).toFixed(2)}€</div>

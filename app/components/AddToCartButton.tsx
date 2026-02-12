@@ -9,9 +9,10 @@ import { useState } from 'react';
 
 interface AddToCartButtonProps {
     product: any; // Product with options
+    size?: 'default' | 'sm';
 }
 
-export function AddToCartButton({ product }: AddToCartButtonProps) {
+export function AddToCartButton({ product, size = 'default' }: AddToCartButtonProps) {
     const { addToCart, updateQty, items } = useCart();
     const [showOptionsModal, setShowOptionsModal] = useState(false);
     const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -59,20 +60,20 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
     return (
         <div className="w-full space-y-2">
             {totalQty > 0 ? (
-                <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-1 border border-emerald-100 dark:border-emerald-900/30">
+                <div className={`flex items-center justify-between bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-1 border border-emerald-100 dark:border-emerald-900/30 ${size === 'sm' ? 'h-8' : ''}`}>
                     <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-300"
+                        className="h-full aspect-square p-0 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-300"
                         onClick={handleRemoveClick}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-minus"><path d="M5 12h14" /></svg>
                     </Button>
-                    <span className="font-bold text-emerald-900 dark:text-emerald-100 min-w-8 text-center">{totalQty}</span>
+                    <span className="font-bold text-emerald-900 dark:text-emerald-100 min-w-8 text-center text-sm">{totalQty}</span>
                     <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 w-8 p-0 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-300"
+                        className="h-full aspect-square p-0 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 hover:text-emerald-900 dark:hover:text-emerald-300"
                         onClick={handleAddClick}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
@@ -80,11 +81,11 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
                 </div>
             ) : (
                 <Button
-                    className="w-full"
+                    className={`w-full ${size === 'sm' ? 'h-8 text-xs' : ''}`}
                     onClick={handleAddClick}
                     disabled={!product.isAvailable}
                 >
-                    {product.isAvailable ? 'Aggiungi al carrello' : 'Non disponibile'}
+                    {product.isAvailable ? (size === 'sm' ? 'Aggiungi' : 'Aggiungi al carrello') : 'Non disponibile'}
                 </Button>
             )}
 

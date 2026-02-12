@@ -384,3 +384,141 @@ export async function resetLifetimeRevenue() {
     revalidatePath('/admin/dashboard');
     revalidatePath('/admin/settings');
 }
+
+export async function updateProductStock(id: string, stock: number) {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    await prisma.product.update({
+        where: { id },
+        data: { stock }
+    });
+    revalidatePath('/admin/stock');
+    revalidatePath('/admin/products');
+}
+
+export async function getAnalyticsData(period: '7d' | '30d') {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    const now = new Date();
+    const startDate = new Date();
+    startDate.setDate(now.getDate() - (period === '7d' ? 7 : 30));
+
+    // Get all non-cancelled orders in period
+    const orders = await prisma.shopOrder.findMany({
+        where: {
+            createdAt: { gte: startDate },
+            status: { not: 'CANCELLED' }
+        },
+        include: { items: true },
+        orderBy: { createdAt: 'asc' }
+    });
+
+    // 1. Daily Sales
+    const dailySalesMap = new Map<string, number>();
+    // Initialize all dates with 0
+    for (let d = new Date(startDate); d <= now; d.setDate(d.getDate() + 1)) {
+        dailySalesMap.set(d.toISOString().split('T')[0], 0);
+    }
+
+    orders.forEach(order => {
+        const date = order.createdAt.toISOString().split('T')[0];
+        const current = dailySalesMap.get(date) || 0;
+        dailySalesMap.set(date, current + order.totalCents / 100);
+    });
+
+    const dailySales = Array.from(dailySalesMap.entries()).map(([date, total]) => ({
+        date,
+        total
+    }));
+
+    // 2. Hourly Distribution (Peak Times)
+    const hourlyMap = new Map<number, number>();
+    for (let i = 0; i < 24; i++) hourlyMap.set(i, 0);
+
+    orders.forEach(order => {
+        // Adjust for timezone roughly or use UTC hour
+        // For simplicity using getHours() which uses server time
+        // ideally we would project to 'Europe/Rome'
+        const hour = new Date(order.createdAt).getHours();
+        hourlyMap.set(hour, (hourlyMap.get(hour) || 0) + 1);
+    });
+
+    const hourlyDistribution = Array.from(hourlyMap.entries()).map(([hour, count]) => ({
+        hour,
+        count
+    }));
+
+    // 3. Top Products
+    const productCountMap = new Map<string, number>();
+    orders.forEach(order => {
+        order.items.forEach(item => {
+            if (item.productId) {
+                productCountMap.set(item.productId, (productCountMap.get(item.productId) || 0) + item.qty);
+            }
+        });
+    });
+
+    // Need product names
+    const products = await prisma.product.findMany({
+        where: { id: { in: Array.from(productCountMap.keys()) } },
+        select: { id: true, name: true }
+    });
+
+    const topProducts = products.map(p => ({
+        name: p.name,
+        quantity: productCountMap.get(p.id) || 0
+    })).sort((a, b) => b.quantity - a.quantity).slice(0, 5);
+
+    return {
+        dailySales,
+        hourlyDistribution,
+        topProducts
+    };
+}
+
+export async function getActiveOrders() {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    return await prisma.shopOrder.findMany({
+        where: {
+            status: { in: ['PAID', 'IN_PREPARATION'] }
+        },
+        orderBy: { createdAt: 'asc' }, // Oldest first for kitchen
+        include: { items: true }
+    });
+}
+
+export async function exportOrdersToCSV() {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    const orders = await prisma.shopOrder.findMany({
+        where: { status: { not: 'CANCELLED' } },
+        orderBy: { createdAt: 'desc' },
+        include: { items: true }
+    });
+
+    const csvRows = [
+        ['ID', 'Data', 'Stato', 'Studente', 'Classe', 'Totale (€)', 'Note', 'Articoli'].join(',')
+    ];
+
+    orders.forEach(order => {
+        const itemsSummary = order.items.map(i => `${i.qty}x ${i.nameSnapshot}`).join('; ');
+        const row = [
+            order.pickupCode,
+            new Date(order.createdAt).toISOString(),
+            order.status,
+            `"${order.studentName}"`,
+            `"${order.studentClass}"`,
+            (order.totalCents / 100).toFixed(2),
+            `"${order.note || ''}"`,
+            `"${itemsSummary}"`
+        ];
+        csvRows.push(row.join(','));
+    });
+
+    return csvRows.join('\n');
+}
