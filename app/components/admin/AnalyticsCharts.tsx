@@ -68,7 +68,7 @@ export default function AnalyticsCharts() {
                                 />
                                 <YAxis stroke="#9CA3AF" fontSize={12} unit="€" />
                                 <Tooltip
-                                    formatter={(value: number) => [`${value.toFixed(2)}€`, 'Ricavo']}
+                                    formatter={(value: number | undefined) => [`${(value || 0).toFixed(2)}€`, 'Ricavo']}
                                     labelFormatter={(label) => new Date(label).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' })}
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                 />
