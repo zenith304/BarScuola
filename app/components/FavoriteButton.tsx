@@ -13,7 +13,11 @@ export function FavoriteButton({ productId }: { productId: string }) {
             const ids = JSON.parse(saved);
             if (Array.isArray(ids) && ids.includes(productId)) {
                 setIsFavorite(true);
+            } else {
+                setIsFavorite(false);
             }
+        } else {
+            setIsFavorite(false);
         }
     }, [productId]);
 
@@ -42,8 +46,8 @@ export function FavoriteButton({ productId }: { productId: string }) {
         <button
             onClick={toggleFavorite}
             className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-200 z-10 ${isFavorite
-                    ? 'bg-red-50 text-red-500 hover:bg-red-100'
-                    : 'bg-white/80 dark:bg-slate-800/80 text-slate-400 hover:text-red-500 hover:bg-white dark:hover:bg-slate-800'
+                ? 'bg-red-50 text-red-500 hover:bg-red-100'
+                : 'bg-white/80 dark:bg-slate-800/80 text-slate-400 hover:text-red-500 hover:bg-white dark:hover:bg-slate-800'
                 }`}
             title={isFavorite ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
         >

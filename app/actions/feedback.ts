@@ -37,3 +37,15 @@ export async function getFeedback() {
         return [];
     }
 }
+
+export async function deleteFeedback(id: string) {
+    try {
+        await prisma.feedback.delete({
+            where: { id },
+        });
+        revalidatePath('/admin/feedback');
+    } catch (error) {
+        console.error('Error deleting feedback:', error);
+        throw new Error('Errore nella cancellazione del feedback.');
+    }
+}

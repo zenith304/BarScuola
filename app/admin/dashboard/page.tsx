@@ -61,9 +61,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <a href="/admin/analytics" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
                     Analytics
                 </a>
-                <a href="/admin/stock" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
-                    Gestione Scorte
-                </a>
+
                 <a href="/admin/kds" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
                     KDS (Cucina)
                 </a>

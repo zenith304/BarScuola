@@ -62,7 +62,10 @@ export function ProductOptionsModal({ productName, options, onConfirm, onCancel 
     if (!mounted) return null;
 
     return createPortal(
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in duration-200">
+        <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999] p-4 animate-in fade-in duration-200"
+            onClick={(e) => e.stopPropagation()}
+        >
             <Card className="max-w-md w-full p-6 max-h-[80vh] overflow-y-auto shadow-2xl scale-100 animate-in zoom-in-95 duration-200 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Personalizza: {productName}</h2>
