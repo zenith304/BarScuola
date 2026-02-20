@@ -94,12 +94,12 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-slate-700">
                 <form className="flex-1 flex gap-2">
                     <input
                         name="q"
                         placeholder="Cerca Pickup Code (es. 1234)"
-                        className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-500"
+                        className="flex-1 rounded-md border border-gray-300 dark:border-slate-600 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-slate-700"
                         defaultValue={q}
                     />
                     <Button type="submit" size="sm">Cerca</Button>
@@ -111,8 +111,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 key={s}
                                 href={`/admin/dashboard?status=${s}&q=${q || ''}&sort=${sort || ''}`}
                                 className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${(status === s || (!status && s === 'ALL'))
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300'
+                                        : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                                     }`}
                             >
                                 {s}
@@ -124,23 +124,32 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
 
             {/* Sorting */}
             <div className="flex justify-end gap-2 items-center">
-                <span className="text-sm font-medium text-gray-700">Ordina per:</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Ordina per:</span>
                 <div className="flex gap-2">
                     <a
                         href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=created_desc`}
-                        className={`px-3 py-1 rounded text-xs font-medium border ${(!sort || sort === 'created_desc') ? 'bg-blue-100 border-blue-200 text-blue-800' : 'bg-white border-gray-100 text-gray-600'}`}
+                        className={`px-3 py-1 rounded text-xs font-medium border ${(!sort || sort === 'created_desc')
+                                ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
+                                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
+                            }`}
                     >
                         Più Recenti
                     </a>
                     <a
                         href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=created_asc`}
-                        className={`px-3 py-1 rounded text-xs font-medium border ${(sort === 'created_asc') ? 'bg-blue-100 border-blue-200 text-blue-800' : 'bg-white border-gray-100 text-gray-600'}`}
+                        className={`px-3 py-1 rounded text-xs font-medium border ${sort === 'created_asc'
+                                ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
+                                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
+                            }`}
                     >
                         Più Vecchi
                     </a>
                     <a
                         href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=pickup_asc`}
-                        className={`px-3 py-1 rounded text-xs font-medium border ${(sort === 'pickup_asc') ? 'bg-blue-100 border-blue-200 text-blue-800' : 'bg-white border-gray-100 text-gray-600'}`}
+                        className={`px-3 py-1 rounded text-xs font-medium border ${sort === 'pickup_asc'
+                                ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
+                                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
+                            }`}
                     >
                         Orario Ritiro
                     </a>
@@ -164,28 +173,28 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 </div>
                                 <div className="text-right">
                                     <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{(order.totalCents / 100).toFixed(2)}€</div>
-                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'PAID' ? 'bg-green-100 text-green-800' :
-                                        order.status === 'IN_PREPARATION' ? 'bg-yellow-100 text-yellow-800' :
-                                            order.status === 'READY' ? 'bg-blue-100 text-blue-800' :
-                                                'bg-gray-100 text-gray-800'
+                                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'PAID' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300' :
+                                            order.status === 'IN_PREPARATION' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300' :
+                                                order.status === 'READY' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300' :
+                                                    'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300'
                                         }`}>
                                         {order.status}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="bg-gray-50 p-3 rounded mb-4 text-sm">
+                            <div className="bg-gray-50 dark:bg-slate-800/60 p-3 rounded mb-4 text-sm">
                                 {order.items.map((item: OrderItem) => (
-                                    <div key={item.id} className="flex justify-between items-center border-b last:border-0 border-gray-200 py-1 text-gray-900">
+                                    <div key={item.id} className="flex justify-between items-center border-b last:border-0 border-gray-200 dark:border-slate-700 py-1 text-gray-900 dark:text-gray-100">
                                         <div className="flex items-center gap-2">
                                             <span>{item.qty}x {item.nameSnapshot}</span>
                                             {item.topicSnapshot && (
-                                                <span className="px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                <span className="px-2 py-0.5 rounded text-xs font-medium bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300">
                                                     {item.topicSnapshot}
                                                 </span>
                                             )}
                                             {item.selectedOptions && (
-                                                <span className="text-sm font-bold text-gray-900 block mt-1">
+                                                <span className="text-sm font-bold text-gray-900 dark:text-gray-200 block mt-1">
                                                     + {item.selectedOptions}
                                                 </span>
                                             )}
@@ -193,7 +202,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                     </div>
                                 ))}
                                 {order.note && (
-                                    <div className="mt-2 text-yellow-700 font-medium">Nota: {order.note}</div>
+                                    <div className="mt-2 text-yellow-600 dark:text-yellow-400 font-medium">Nota: {order.note}</div>
                                 )}
                             </div>
 
@@ -226,14 +235,14 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 {/* Print Queue Side Panel */}
                 <div className="space-y-4">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Coda di Stampa ({printJobs.length})</h2>
-                    <div className="bg-white rounded-lg shadow border border-gray-200 p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                    <div className="bg-white dark:bg-slate-800 rounded-lg shadow border border-gray-200 dark:border-slate-700 p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
                         {printJobs.map((job: PrintJob & { order: ShopOrder }) => (
-                            <div key={job.id} className="border-b border-gray-100 pb-4 mb-4 last:border-0 last:mb-0">
+                            <div key={job.id} className="border-b border-gray-100 dark:border-slate-700 pb-4 mb-4 last:border-0 last:mb-0">
                                 <div className="flex justify-between items-start mb-2">
-                                    <span className="font-bold text-gray-900">#{job.order.pickupCode}</span>
-                                    <span className="text-xs text-gray-400">{new Date(job.createdAt).toLocaleTimeString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' })}</span>
+                                    <span className="font-bold text-gray-900 dark:text-gray-100">#{job.order.pickupCode}</span>
+                                    <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(job.createdAt).toLocaleTimeString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
-                                <pre className="text-xs bg-gray-50 p-2 rounded whitespace-pre-wrap font-mono mb-2 border border-gray-200 text-gray-900">
+                                <pre className="text-xs bg-gray-50 dark:bg-slate-900 p-2 rounded whitespace-pre-wrap font-mono mb-2 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-gray-200">
                                     {job.payloadText}
                                 </pre>
                                 <form action={markJobPrinted.bind(null, job.id)}>
@@ -241,7 +250,7 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 </form>
                             </div>
                         ))}
-                        {printJobs.length === 0 && <p className="text-xs text-gray-400 text-center">Nessun job in coda.</p>}
+                        {printJobs.length === 0 && <p className="text-xs text-gray-400 dark:text-gray-500 text-center">Nessun job in coda.</p>}
                     </div>
                 </div>
             </div>
