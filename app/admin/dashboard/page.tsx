@@ -65,12 +65,6 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                 <a href="/admin/kds" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
                     KDS (Cucina)
                 </a>
-                <a href="/admin/products" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
-                    Prodotti
-                </a>
-                <a href="/admin/settings" className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 font-medium rounded-lg transition-colors">
-                    Impostazioni
-                </a>
             </nav>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -111,8 +105,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 key={s}
                                 href={`/admin/dashboard?status=${s}&q=${q || ''}&sort=${sort || ''}`}
                                 className={`px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap ${(status === s || (!status && s === 'ALL'))
-                                        ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300'
-                                        : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+                                    ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300'
+                                    : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
                                     }`}
                             >
                                 {s}
@@ -129,8 +123,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <a
                         href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=created_desc`}
                         className={`px-3 py-1 rounded text-xs font-medium border ${(!sort || sort === 'created_desc')
-                                ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
-                                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
+                            ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
+                            : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
                             }`}
                     >
                         Più Recenti
@@ -138,8 +132,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <a
                         href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=created_asc`}
                         className={`px-3 py-1 rounded text-xs font-medium border ${sort === 'created_asc'
-                                ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
-                                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
+                            ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
+                            : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
                             }`}
                     >
                         Più Vecchi
@@ -147,8 +141,8 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                     <a
                         href={`/admin/dashboard?status=${status || 'ALL'}&q=${q || ''}&sort=pickup_asc`}
                         className={`px-3 py-1 rounded text-xs font-medium border ${sort === 'pickup_asc'
-                                ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
-                                : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
+                            ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300'
+                            : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-400'
                             }`}
                     >
                         Orario Ritiro
@@ -174,9 +168,9 @@ export default async function AdminDashboard({ searchParams }: { searchParams: {
                                 <div className="text-right">
                                     <div className="font-bold text-lg text-gray-900 dark:text-gray-100">{(order.totalCents / 100).toFixed(2)}€</div>
                                     <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${order.status === 'PAID' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300' :
-                                            order.status === 'IN_PREPARATION' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300' :
-                                                order.status === 'READY' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300' :
-                                                    'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300'
+                                        order.status === 'IN_PREPARATION' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300' :
+                                            order.status === 'READY' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300' :
+                                                'bg-gray-100 dark:bg-slate-700 text-gray-800 dark:text-gray-300'
                                         }`}>
                                         {order.status}
                                     </span>
