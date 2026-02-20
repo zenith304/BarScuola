@@ -7,18 +7,20 @@ import { Button } from '@/app/components/ui/Button';
 export function FavoriteButton({ productId }: { productId: string }) {
     const [isFavorite, setIsFavorite] = useState(false);
 
-    useEffect(() => {
+    const syncFavoriteState = () => {
         const saved = localStorage.getItem('bar-scuola-favorites');
         if (saved) {
             const ids = JSON.parse(saved);
-            if (Array.isArray(ids) && ids.includes(productId)) {
-                setIsFavorite(true);
-            } else {
-                setIsFavorite(false);
-            }
+            setIsFavorite(Array.isArray(ids) && ids.includes(productId));
         } else {
             setIsFavorite(false);
         }
+    };
+
+    useEffect(() => {
+        syncFavoriteState();
+        window.addEventListener('favorites-updated', syncFavoriteState);
+        return () => window.removeEventListener('favorites-updated', syncFavoriteState);
     }, [productId]);
 
     const toggleFavorite = (e: React.MouseEvent) => {

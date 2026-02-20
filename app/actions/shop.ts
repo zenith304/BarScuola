@@ -13,7 +13,7 @@ export type CartItem = {
 };
 
 export type CreateOrderInput = {
-    studentName: string;
+    studentName?: string;
     studentClass: string;
     note?: string;
     pickupTime?: string;
@@ -142,7 +142,7 @@ export async function createOrder(input: CreateOrderInput) {
         // 4. Create Order (Status: PENDING_PAYMENT)
         const order = await prisma.shopOrder.create({
             data: {
-                studentName: input.studentName,
+                studentName: input.studentName || '',
                 studentClass: input.studentClass,
                 note: input.note,
                 pickupTime: input.pickupTime,
@@ -265,7 +265,11 @@ export async function finalizeOrder(orderId: string) {
         } else {
             printText += `\n`;
         }
-        printText += `${order.studentName} (${order.studentClass})\n`;
+        if (order.studentName) {
+            printText += `${order.studentName} (${order.studentClass})\n`;
+        } else {
+            printText += `${order.studentClass}\n`;
+        }
         order.items.forEach((i) => {
             let itemLine = `${i.qty} x ${i.nameSnapshot}`;
             if (i.topicSnapshot) {

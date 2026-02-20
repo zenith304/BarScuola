@@ -13,7 +13,6 @@ export default function CartPage() {
     const { items, removeFromCart, updateQty, totalCents, clearCart } = useCart();
     const router = useRouter();
 
-    const [studentName, setStudentName] = useState('');
     const [studentClass, setStudentClass] = useState('');
     const [note, setNote] = useState('');
     const [pickupTime, setPickupTime] = useState('');
@@ -27,8 +26,8 @@ export default function CartPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!studentName || !studentClass) {
-            setError('Nome e Classe sono obbligatori');
+        if (!studentClass) {
+            setError('La Classe è obbligatoria');
             return;
         }
         if (!pickupTime) {
@@ -63,7 +62,6 @@ export default function CartPage() {
 
         try {
             const res = await createOrder({
-                studentName,
                 studentClass,
                 note,
                 pickupTime,
@@ -146,18 +144,7 @@ export default function CartPage() {
             <Card className="p-6">
                 <h2 className="text-lg font-medium mb-4 text-foreground">Dettagli Studente</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                            Nome e Cognome
-                        </label>
-                        <Input
-                            value={studentName}
-                            className="w-full rounded-md border border-input bg-background-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-foreground"
-                            onChange={e => setStudentName(e.target.value)}
-                            placeholder="Mario Rossi"
-                            required
-                        />
-                    </div>
+
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
                             Classe
