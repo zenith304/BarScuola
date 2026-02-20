@@ -63,23 +63,9 @@ export async function getDashboardData(statusFilter?: string, searchCode?: strin
         prisma.settings.findUnique({ where: { id: 1 } })
     ]);
 
-    // Calculate Daily Revenue (sum of non-cancelled orders from today)
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const dailyOrders = await prisma.shopOrder.findMany({
-        where: {
-            createdAt: { gte: startOfDay },
-            status: { not: 'CANCELLED' }
-        },
-        select: { totalCents: true }
-    });
-
-    const dailyRevenueCents = dailyOrders.reduce((sum: any, o: { totalCents: any; }) => sum + o.totalCents, 0);
-
     return {
         orders,
-        dailyRevenueCents,
+        dailyRevenueCents: settings?.dailyRevenueCents || 0,
         lifetimeRevenueCents: settings?.lifetimeRevenueCents || 0
     };
 }
@@ -348,6 +334,80 @@ export async function deleteAllOrders() {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
 
+    // --- Snapshot analytics BEFORE deleting ---
+    // Group orders by YYYY-MM-DD date
+    const orders = await prisma.shopOrder.findMany({
+        where: { status: { not: 'CANCELLED' } },
+        include: { items: true },
+    });
+
+    if (orders.length > 0) {
+        const dayMap = new Map<string, { revenueCents: number; orderCount: number; items: Map<string, { productName: string; qty: number }> }>();
+
+        for (const order of orders) {
+            const date = order.createdAt.toISOString().split('T')[0];
+            if (!dayMap.has(date)) {
+                dayMap.set(date, { revenueCents: 0, orderCount: 0, items: new Map() });
+            }
+            const day = dayMap.get(date)!;
+            day.revenueCents += order.totalCents;
+            day.orderCount += 1;
+
+            for (const item of order.items) {
+                const key = item.productId || item.nameSnapshot;
+                const existing = day.items.get(key);
+                if (existing) {
+                    existing.qty += item.qty;
+                } else {
+                    day.items.set(key, { productName: item.nameSnapshot, qty: item.qty });
+                }
+            }
+        }
+
+        // Merge with existing snapshots (upsert by date)
+        for (const [date, data] of dayMap.entries()) {
+            const existing = await prisma.analyticsSnapshot.findFirst({ where: { date }, include: { items: true } });
+
+            if (existing) {
+                // Merge revenue + count
+                await prisma.analyticsSnapshot.update({
+                    where: { id: existing.id },
+                    data: { revenueCents: existing.revenueCents + data.revenueCents, orderCount: existing.orderCount + data.orderCount }
+                });
+                // Merge item quantities
+                for (const [key, item] of data.items.entries()) {
+                    const existingItem = existing.items.find(i => (i.productId || i.productName) === key || i.productName === item.productName);
+                    if (existingItem) {
+                        await prisma.analyticsSnapshotItem.update({
+                            where: { id: existingItem.id },
+                            data: { qty: existingItem.qty + item.qty }
+                        });
+                    } else {
+                        await prisma.analyticsSnapshotItem.create({
+                            data: { snapshotId: existing.id, productId: key !== item.productName ? key : null, productName: item.productName, qty: item.qty }
+                        });
+                    }
+                }
+            } else {
+                await prisma.analyticsSnapshot.create({
+                    data: {
+                        date,
+                        revenueCents: data.revenueCents,
+                        orderCount: data.orderCount,
+                        items: {
+                            create: Array.from(data.items.entries()).map(([key, item]) => ({
+                                productId: key !== item.productName ? key : null,
+                                productName: item.productName,
+                                qty: item.qty,
+                            }))
+                        }
+                    }
+                });
+            }
+        }
+    }
+    // --- End snapshot ---
+
     // Delete in order to avoid foreign key constraints
     await prisma.$transaction([
         prisma.orderItem.deleteMany(),
@@ -385,6 +445,31 @@ export async function resetLifetimeRevenue() {
     revalidatePath('/admin/settings');
 }
 
+export async function resetDailyRevenue() {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    await prisma.settings.update({
+        where: { id: 1 },
+        data: { dailyRevenueCents: 0 }
+    });
+
+    revalidatePath('/admin/dashboard');
+    revalidatePath('/admin/settings');
+}
+
+export async function resetAnalytics() {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) throw new Error('Unauthorized');
+
+    await prisma.$transaction([
+        prisma.analyticsSnapshotItem.deleteMany(),
+        prisma.analyticsSnapshot.deleteMany(),
+    ]);
+
+    revalidatePath('/admin/analytics');
+}
+
 export async function updateProductStock(id: string, stock: number) {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
@@ -404,78 +489,90 @@ export async function getAnalyticsData(period: '7d' | '30d') {
     const now = new Date();
     const startDate = new Date();
     startDate.setDate(now.getDate() - (period === '7d' ? 7 : 30));
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const todayStr = now.toISOString().split('T')[0];
 
-    // Get all non-cancelled orders in period
-    const orders = await prisma.shopOrder.findMany({
-        where: {
-            createdAt: { gte: startDate },
-            status: { not: 'CANCELLED' }
-        },
-        include: { items: true },
-        orderBy: { createdAt: 'asc' }
-    });
-
-    // 1. Daily Sales
+    // ── 1. Daily Sales ───────────────────────────────────────────────────────
+    // Init all dates in range to 0
     const dailySalesMap = new Map<string, number>();
-    // Initialize all dates with 0
     for (let d = new Date(startDate); d <= now; d.setDate(d.getDate() + 1)) {
         dailySalesMap.set(d.toISOString().split('T')[0], 0);
     }
 
-    orders.forEach(order => {
-        const date = order.createdAt.toISOString().split('T')[0];
-        const current = dailySalesMap.get(date) || 0;
-        dailySalesMap.set(date, current + order.totalCents / 100);
+    // From historical snapshots
+    const snapshots = await prisma.analyticsSnapshot.findMany({
+        where: { date: { gte: startDateStr } },
+        include: { items: true },
+    });
+    snapshots.forEach(snap => {
+        const cur = dailySalesMap.get(snap.date) || 0;
+        dailySalesMap.set(snap.date, cur + snap.revenueCents / 100);
     });
 
-    const dailySales = Array.from(dailySalesMap.entries()).map(([date, total]) => ({
-        date,
-        total
-    }));
+    // Today's live orders (not yet snapshotted)
+    const startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0);
+    const liveOrders = await prisma.shopOrder.findMany({
+        where: { createdAt: { gte: startOfToday }, status: { not: 'CANCELLED' } },
+        include: { items: true },
+        orderBy: { createdAt: 'asc' },
+    });
+    liveOrders.forEach(order => {
+        const cur = dailySalesMap.get(todayStr) || 0;
+        dailySalesMap.set(todayStr, cur + order.totalCents / 100);
+    });
 
-    // 2. Hourly Distribution (Peak Times)
+    const dailySales = Array.from(dailySalesMap.entries()).map(([date, total]) => ({ date, total }));
+
+    // ── 2. Hourly Distribution ───────────────────────────────────────────────
     const hourlyMap = new Map<number, number>();
     for (let i = 0; i < 24; i++) hourlyMap.set(i, 0);
 
-    orders.forEach(order => {
-        // Adjust for timezone roughly or use UTC hour
-        // For simplicity using getHours() which uses server time
-        // ideally we would project to 'Europe/Rome'
+    // Live orders for hourly distribution (snapshots don't store hourly)
+    // Use all live + today for peak time chart
+    const allLiveForHourly = await prisma.shopOrder.findMany({
+        where: { status: { not: 'CANCELLED' } },
+        select: { createdAt: true },
+    });
+    allLiveForHourly.forEach(order => {
         const hour = new Date(order.createdAt).getHours();
         hourlyMap.set(hour, (hourlyMap.get(hour) || 0) + 1);
     });
 
-    const hourlyDistribution = Array.from(hourlyMap.entries()).map(([hour, count]) => ({
-        hour,
-        count
-    }));
+    const hourlyDistribution = Array.from(hourlyMap.entries()).map(([hour, count]) => ({ hour, count }));
 
-    // 3. Top Products
-    const productCountMap = new Map<string, number>();
-    orders.forEach(order => {
+    // ── 3. Top Products ──────────────────────────────────────────────────────
+    // Aggregate from snapshots
+    const productQtyMap = new Map<string, { name: string; qty: number }>();
+    snapshots.forEach(snap => {
+        snap.items.forEach(item => {
+            const key = item.productId || item.productName;
+            const existing = productQtyMap.get(key);
+            if (existing) {
+                existing.qty += item.qty;
+            } else {
+                productQtyMap.set(key, { name: item.productName, qty: item.qty });
+            }
+        });
+    });
+    // Merge today's live orders
+    liveOrders.forEach(order => {
         order.items.forEach(item => {
-            if (item.productId) {
-                productCountMap.set(item.productId, (productCountMap.get(item.productId) || 0) + item.qty);
+            const key = item.productId || item.nameSnapshot;
+            const existing = productQtyMap.get(key);
+            if (existing) {
+                existing.qty += item.qty;
+            } else {
+                productQtyMap.set(key, { name: item.nameSnapshot, qty: item.qty });
             }
         });
     });
 
-    // Need product names
-    const products = await prisma.product.findMany({
-        where: { id: { in: Array.from(productCountMap.keys()) } },
-        select: { id: true, name: true }
-    });
+    const topProducts = Array.from(productQtyMap.values())
+        .sort((a, b) => b.qty - a.qty)
+        .slice(0, 5)
+        .map(p => ({ name: p.name, quantity: p.qty }));
 
-    const topProducts = products.map(p => ({
-        name: p.name,
-        quantity: productCountMap.get(p.id) || 0
-    })).sort((a, b) => b.quantity - a.quantity).slice(0, 5);
-
-    return {
-        dailySales,
-        hourlyDistribution,
-        topProducts
-    };
+    return { dailySales, hourlyDistribution, topProducts };
 }
 
 export async function getActiveOrders() {

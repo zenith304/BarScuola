@@ -75,7 +75,15 @@ export async function createOrder(input: CreateOrderInput) {
         const orderStartTimeVal = orderStartHour * 60 + orderStartMinute;
         const orderEndTimeVal = orderEndHour * 60 + orderEndMinute;
 
-        if (currentTimeVal < orderStartTimeVal || currentTimeVal > orderEndTimeVal) {
+        // Check if the current time is OUTSIDE the ordering window.
+        // Two cases:
+        //   Normal window (start < end): e.g. 08:00 → 10:30 — block if outside that range.
+        //   Overnight window (start > end): e.g. 14:30 → 10:30 — block only if in the gap (between 10:30 and 14:30).
+        const isOutsideWindow = orderStartTimeVal <= orderEndTimeVal
+            ? (currentTimeVal < orderStartTimeVal || currentTimeVal > orderEndTimeVal)  // same-day window
+            : (currentTimeVal < orderStartTimeVal && currentTimeVal > orderEndTimeVal); // overnight window
+
+        if (isOutsideWindow) {
             return { error: `Ordinazioni chiuse. (Orario: ${settings.orderStartTime} - ${settings.orderEndTime})` };
         }
 
@@ -304,7 +312,10 @@ export async function finalizeOrder(orderId: string) {
                 // Increment revenue only when converting to PAID
                 await tx.settings.update({
                     where: { id: 1 },
-                    data: { lifetimeRevenueCents: { increment: order.totalCents } }
+                    data: {
+                        lifetimeRevenueCents: { increment: order.totalCents },
+                        dailyRevenueCents: { increment: order.totalCents },
+                    }
                 });
             }
 

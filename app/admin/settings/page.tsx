@@ -4,6 +4,8 @@ import { Button } from '@/app/components/ui/Button';
 import { Input } from '@/app/components/ui/Input';
 import { Card } from '@/app/components/ui/Card';
 import { ResetRevenueButton } from '@/app/components/admin/ResetRevenueButton';
+import { ResetDailyRevenueButton } from '@/app/components/admin/ResetDailyRevenueButton';
+import { ResetAnalyticsButton } from '@/app/components/admin/ResetAnalyticsButton';
 import { ExportButton } from '@/app/components/admin/ExportButton';
 
 
@@ -106,7 +108,18 @@ export default async function SettingsPage() {
                     Queste azioni sono irreversibili. Prestare attenzione.
                 </p>
                 <div className="flex flex-wrap gap-4">
-                    <ResetRevenueButton />
+                    <div className="flex flex-col gap-1">
+                        <ResetDailyRevenueButton />
+                        <span className="text-xs text-red-600">Azzera solo l'incasso di oggi</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <ResetAnalyticsButton />
+                        <span className="text-xs text-red-600">Cancella lo storico grafici/prodotti</span>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                        <ResetRevenueButton />
+                        <span className="text-xs text-red-600">Azzera l'incasso totale storico</span>
+                    </div>
                     <ExportButton />
                 </div>
             </Card>

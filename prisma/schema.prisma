@@ -76,6 +76,25 @@ model Settings {
   pickupEndTime        String  @default("11:00") // End of pickup window
   orderingEnabled      Boolean @default(true)
   lifetimeRevenueCents Int     @default(0)
+  dailyRevenueCents    Int     @default(0)
+}
+
+model AnalyticsSnapshot {
+  id           String                  @id @default(uuid())
+  date         String                  // "YYYY-MM-DD" — the day the data was captured
+  revenueCents Int                     // total revenue for that day
+  orderCount   Int                     // number of orders
+  createdAt    DateTime                @default(now())
+  items        AnalyticsSnapshotItem[]
+}
+
+model AnalyticsSnapshotItem {
+  id          String            @id @default(uuid())
+  snapshotId  String
+  snapshot    AnalyticsSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  productId   String?           // null if product was deleted since then
+  productName String            // name at time of snapshot
+  qty         Int
 }
 
 model PrintJob {
