@@ -10,9 +10,10 @@ import { Search, X } from 'lucide-react';
 
 interface ProductGridProps {
     menu: Record<string, Product[]>;
+    bestSellerProductId?: string | null;
 }
 
-export function ProductGrid({ menu }: ProductGridProps) {
+export function ProductGrid({ menu, bestSellerProductId }: ProductGridProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState<string | null>(null);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -142,6 +143,13 @@ export function ProductGrid({ menu }: ProductGridProps) {
                                         onClick={() => setSelectedProduct(product)}
                                     >
                                         <FavoriteButton productId={product.id} />
+                                        {product.id === bestSellerProductId && (
+                                            <div className="absolute top-0 left-0 z-10">
+                                                <div className="bg-amber-400 text-amber-900 text-[11px] font-black px-3 py-1 rounded-br-xl shadow-md flex items-center gap-1 tracking-wide">
+                                                    🏆 Il più venduto
+                                                </div>
+                                            </div>
+                                        )}
                                         <div className="p-5">
                                             <div className="flex justify-between items-start mb-2 pr-6">
                                                 <h3 className="text-lg font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{product.name}</h3>

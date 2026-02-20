@@ -1,4 +1,4 @@
-import { getMenu, getSettings } from '@/app/actions/shop';
+import { getMenu, getSettings, getBestSellerProductId } from '@/app/actions/shop';
 import { Product } from '@prisma/client';
 import { Card } from '@/app/components/ui/Card';
 import { AddToCartButton } from '@/app/components/AddToCartButton'; // We need this client component
@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic';
 export default async function MenuPage() {
   const menu = await getMenu();
   const settings = await getSettings();
+  const bestSellerProductId = await getBestSellerProductId();
   const categories = Object.keys(menu);
 
   // Check if ordering is enabled globally
@@ -39,7 +40,7 @@ export default async function MenuPage() {
 
       <QuickReorder />
 
-      <ProductGrid menu={menu} />
+      <ProductGrid menu={menu} bestSellerProductId={bestSellerProductId} />
       <FloatingCartButton />
     </div>
   );

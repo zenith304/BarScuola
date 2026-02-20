@@ -231,6 +231,17 @@ export async function getProductsByIds(ids: string[]) {
     });
 }
 
+export async function getBestSellerProductId(): Promise<string | null> {
+    const result = await prisma.orderItem.groupBy({
+        by: ['productId'],
+        _sum: { qty: true },
+        orderBy: { _sum: { qty: 'desc' } },
+        take: 1,
+        where: { productId: { not: null } },
+    });
+    return result[0]?.productId ?? null;
+}
+
 export async function finalizeOrder(orderId: string) {
     try {
         const order = await prisma.shopOrder.findUnique({
