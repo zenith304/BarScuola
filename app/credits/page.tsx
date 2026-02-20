@@ -9,7 +9,7 @@ export default function CreditsPage() {
     const [stats, setStats] = useState({
         panini: 0,
         money: 0,
-        coffees: 0,
+        calories: 0,
         bugs: 0
     });
 
@@ -18,7 +18,7 @@ export default function CreditsPage() {
         setStats({
             panini: Math.floor(Math.random() * 5000) + 100,
             money: Math.floor(Math.random() * 20000) + 500,
-            coffees: Math.floor(Math.random() * 1000) + 50,
+            calories: Math.floor(Math.random() * 1000) + 700,
             bugs: 999
         });
 
@@ -88,8 +88,8 @@ export default function CreditsPage() {
                         <br />
                         <p>PANINI ORDINATI ............... {stats.panini}</p>
                         <p>SOLDI SPESI ................... {stats.money} €</p>
-                        <p>CALORIE ASSIMILATE ............... {stats.coffees}</p>
-                        <p>BUG CREATI ................... {stats.bugs}+</p>
+                        <p>CALORIE ASSIMILATE ............... {stats.calories}</p>
+                        <p>SANTI INVOCATI ................... {stats.bugs}+</p>
                     </div>
 
                     <br />
@@ -106,6 +106,18 @@ export default function CreditsPage() {
                     <p className="text-white">LUCA ROSSI</p>
                     <p className="text-white">BAR ITIS ROSSI</p>
                     <br />
+                    <p>Tester</p>
+                    <p className="text-white">RICCARDO TONIOLO</p>
+                    <p className="text-white">MATTEO FIDANZA</p>
+                    <p className="text-white">TOMMASO FIORIN</p>
+                    <p className="text-white">LUCA ROSSI</p>
+                    <p className="text-white">LUCA DAL SASSO</p>
+                    <br />
+                    <p>I Rappresentanti d'Istituto</p>
+                    <p className="text-white">GIULIA DALLA VALLE</p>
+                    <p className="text-white">ADELE DE CHECCHI</p>
+                    <p className="text-white">LUCA ROSSI</p>
+                    <p className="text-white">LUCA DAL SASSO</p>
                     <br />
                     <p>Grazie per aver giocato.</p>
                 </div>

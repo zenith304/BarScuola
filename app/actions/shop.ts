@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { stripe } from "@/lib/stripe";
+import { rateLimit } from '@/lib/rateLimit';
+import { headers } from 'next/headers';
 
 // --- Types ---
 export type CartItem = {
@@ -54,6 +56,24 @@ export async function getSettings() {
 }
 
 export async function createOrder(input: CreateOrderInput) {
+    // --- Security: Rate Limit ---
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    if (!rateLimit(ip, { maxRequests: 10, windowMs: 60_000 })) {
+        return { error: 'Troppe richieste. Riprova tra un minuto.' };
+    }
+
+    // --- Security: Input Validation ---
+    if (input.studentClass && input.studentClass.length > 20) {
+        return { error: 'Dati non validi.' };
+    }
+    if (input.note && input.note.length > 500) {
+        return { error: 'La nota è troppo lunga (max 500 caratteri).' };
+    }
+    if (!input.cart || input.cart.length === 0 || input.cart.length > 50) {
+        return { error: 'Carrello non valido.' };
+    }
+
     // 1. Check Settings (Cutoff & Enabled)
     try {
         const settings = await prisma.settings.findUnique({ where: { id: 1 } });

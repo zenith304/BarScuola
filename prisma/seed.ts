@@ -38,16 +38,15 @@ async function main() {
 
   // 3. Create Products
   const products = [
-    { name: 'Panino al Prosciutto', category: 'Panini', priceCents: 350, description: 'Pane fresco con prosciutto cotto alta qualità', allergens: 'Glutine' },
-    { name: 'Panino al Salame', category: 'Panini', priceCents: 350, description: 'Pane fresco con salame milano', allergens: 'Glutine' },
-    { name: 'Focaccia Ligure', category: 'Panini', priceCents: 250, description: 'Focaccia classica all\'olio', allergens: 'Glutine' },
-    { name: 'Menu Pizza', category: 'Menu', priceCents: 600, description: 'Trancio di pizza + bibita', allergens: 'Glutine, Lattosio' },
-    { name: 'Menu Panino', category: 'Menu', priceCents: 550, description: 'Panino a scelta + bibita', allergens: 'Glutine' },
-    { name: 'Coca Cola', category: 'Bevande', priceCents: 200, description: 'Lattina 33cl', allergens: '' },
-    { name: 'Acqua Naturale', category: 'Bevande', priceCents: 100, description: 'Bottiglietta 50cl', allergens: '' },
-    { name: 'Acqua Frizzante', category: 'Bevande', priceCents: 100, description: 'Bottiglietta 50cl', allergens: '' },
-    { name: 'Kinder Bueno', category: 'Extra', priceCents: 150, description: 'Snack dolce', allergens: 'Lattosio, Nocciole, Glutine' },
-    { name: 'Patatine', category: 'Extra', priceCents: 120, description: 'Sacchetto classico', allergens: '' },
+    { name: 'Panino al Prosciutto', category: 'Panini Semplici', priceCents: 150, description: 'Pane fresco con prosciutto cotto alta qualità', allergens: 'Glutine' },
+    { name: 'Panino al Salame', category: 'Panini Semplici', priceCents: 150, description: 'Pane fresco con salame milano', allergens: 'Glutine' },
+    { name: 'Panino alla Mortadella', category: 'Panini Semplici', priceCents: 150, description: 'Pane fresco con mortadella', allergens: 'Glutine' },
+    { name: 'Panino al Formaggio', category: 'Panini Semplici', priceCents: 150, description: 'Pane fresco con formaggio', allergens: 'Glutine, Lattosio' },
+    { name: 'Panino alla Bresaola', category: 'Panini Semplici', priceCents: 150, description: 'Pane fresco con bresaola', allergens: 'Glutine' },
+    { name: 'Panino alla Pancetta', category: 'Panini Semplici', priceCents: 150, description: 'Pane fresco con pancetta', allergens: 'Glutine' },
+    { name: 'Menu Cotoletta', category: 'Menu', priceCents: 300, description: 'Panino con la cotoletta', allergens: 'Glutine, Lattosio' },
+    { name: 'Menu Pranzo', category: 'Menu', priceCents: 450, description: 'Scelta tra Barchetta/Panzerotti + bibita', allergens: 'Glutine' },
+    { name: 'Hot-Dog', category: 'Altro', priceCents: 200, description: 'Hot-Dog', allergens: '' },
   ];
 
   for (const p of products) {
