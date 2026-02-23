@@ -17,7 +17,13 @@ export default function KDSBoard() {
     const fetchOrders = async () => {
         try {
             const data = await getActiveOrders();
-            setOrders(data);
+            // Sort by pickup time ascending (HH:MM string comparison works correctly)
+            const sorted = [...data].sort((a, b) => {
+                const ta = a.pickupTime || '';
+                const tb = b.pickupTime || '';
+                return ta.localeCompare(tb);
+            });
+            setOrders(sorted);
             setLastRefreshed(new Date());
         } catch (error) {
             console.error('Failed to fetch KDS orders', error);
@@ -73,24 +79,20 @@ export default function KDSBoard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {orders.map((order) => {
-                    const elapsedMinutes = Math.floor((new Date().getTime() - new Date(order.createdAt).getTime()) / 60000);
-                    const isLate = elapsedMinutes > 15;
-
                     return (
                         <Card
                             key={order.id}
                             className={`
                                 flex flex-col h-full border-4 shadow-md overflow-hidden relative
                                 ${order.status === 'IN_PREPARATION' ? 'border-amber-400 bg-amber-50/50 dark:bg-amber-900/10' : 'border-blue-500 bg-white dark:bg-slate-900'}
-                                ${isLate ? 'ring-4 ring-red-500 ring-opacity-30' : ''}
                             `}
                         >
                             {/* Header */}
                             <div className={`p-4 text-white flex justify-between items-center ${order.status === 'IN_PREPARATION' ? 'bg-amber-500' : 'bg-blue-600'}`}>
                                 <h3 className="text-4xl font-black">#{order.pickupCode}</h3>
                                 <div className="text-right">
-                                    <div className="text-lg font-bold">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                                    <div className="text-xs font-medium opacity-90">{elapsedMinutes} min fa</div>
+                                    <div className="text-xs font-medium opacity-80">Ritiro</div>
+                                    <div className="text-2xl font-black">{order.pickupTime || '—'}</div>
                                 </div>
                             </div>
 
