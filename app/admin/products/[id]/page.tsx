@@ -26,14 +26,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             }
             setProduct(prod);
             setCategory(prod.category);
-            // Load existing options (excluding auto-generated Bevanda for Menu)
-            const existingOptions = (prod.options || [])
-                .filter((opt: any) => !(prod.category === 'Menu' && opt.name === 'Bevanda'))
-                .map((opt: any) => ({
-                    name: opt.name,
-                    choices: opt.choices,
-                    allowMulti: opt.allowMulti
-                }));
+            const existingOptions = (prod.options || []).map((opt: any) => ({
+                name: opt.name,
+                choices: opt.choices,
+                allowMulti: opt.allowMulti
+            }));
             setOptions(existingOptions);
             setLoading(false);
         }
@@ -44,7 +41,6 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         await updateProduct(id, {
             name: formData.get('name') as string,
             category: formData.get('category') as string,
-            topic: formData.get('topic') as string,
             priceCents: formData.get('price') as string,
             description: formData.get('description') as string,
             allergens: formData.get('allergens') as string,
@@ -100,20 +96,6 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
                             <option value="Menu">Menu</option>
                             <option value="Altro">Altro</option>
                         </select>
-                        {category === 'Menu' && (
-                            <p className="text-xs text-blue-600 mt-1">ℹ️ Una opzione "Bevanda" sarà aggiunta automaticamente con le bevande disponibili.</p>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Topic (Opzionale)</label>
-                        <input
-                            name="topic"
-                            defaultValue={product.topic || ''}
-                            placeholder="es. Salse, Bevande, Extra"
-                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Categorizza il prodotto per tipo (es. Salse, Bevande)</p>
                     </div>
 
                     <div>

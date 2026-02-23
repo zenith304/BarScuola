@@ -16,7 +16,6 @@ export default function NewProductPage() {
         await createProduct({
             name: formData.get('name') as string,
             category: formData.get('category') as string,
-            topic: formData.get('topic') as string,
             priceCents: formData.get('price') as string,
             description: formData.get('description') as string,
             allergens: formData.get('allergens') as string,

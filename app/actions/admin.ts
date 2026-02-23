@@ -102,7 +102,6 @@ export async function getProduct(id: string) {
 export async function createProduct(data: {
     name: string;
     category: string;
-    topic?: string;
     priceCents: string | number;
     description?: string;
     allergens?: string;
@@ -112,28 +111,12 @@ export async function createProduct(data: {
     const isAuth = await isAdminAuthenticated();
     if (!isAuth) throw new Error('Unauthorized');
 
-    // Auto-add drinks option for Menu category
-    let optionsToCreate = data.options || [];
-    if (data.category === 'Menu') {
-        const drinks = await prisma.product.findMany({
-            where: { category: 'Bevande', isAvailable: true },
-            select: { name: true }
-        });
-        const drinkNames = drinks.map((d: { name: any; }) => d.name).join(', ');
-        if (drinkNames) {
-            optionsToCreate.push({
-                name: 'Bevanda',
-                choices: drinkNames,
-                allowMulti: false
-            });
-        }
-    }
+    const optionsToCreate = data.options || [];
 
     await prisma.product.create({
         data: {
             name: data.name,
             category: data.category,
-            topic: data.topic || null,
             priceCents: parseInt(String(data.priceCents)),
             description: data.description,
             allergens: data.allergens,
@@ -150,7 +133,6 @@ export async function createProduct(data: {
 export async function updateProduct(id: string, data: {
     name: string;
     category: string;
-    topic?: string;
     priceCents: string | number;
     description?: string;
     allergens?: string;
@@ -163,29 +145,13 @@ export async function updateProduct(id: string, data: {
     // Delete existing options and recreate
     await prisma.productOption.deleteMany({ where: { productId: id } });
 
-    // Auto-add drinks option for Menu category
-    let optionsToCreate = data.options || [];
-    if (data.category === 'Menu') {
-        const drinks = await prisma.product.findMany({
-            where: { category: 'Bevande', isAvailable: true },
-            select: { name: true }
-        });
-        const drinkNames = drinks.map((d: { name: any; }) => d.name).join(', ');
-        if (drinkNames) {
-            optionsToCreate.push({
-                name: 'Bevanda',
-                choices: drinkNames,
-                allowMulti: false
-            });
-        }
-    }
+    const optionsToCreate = data.options || [];
 
     await prisma.product.update({
         where: { id },
         data: {
             name: data.name,
             category: data.category,
-            topic: data.topic || null,
             priceCents: parseInt(String(data.priceCents)),
             description: data.description,
             allergens: data.allergens,
