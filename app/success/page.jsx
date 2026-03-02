@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 import { stripe } from "@/lib/stripe";
 import { prisma } from '@/lib/prisma';
-import { finalizeOrder } from '@/app/actions/shop';
+import { finalizeOrder } from '@/lib/orders';
 
 export default async function Success({ searchParams }) {
   const { session_id } = await searchParams

@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 
 import { stripe } from "@/lib/stripe";
 import { prisma } from '@/lib/prisma';
-import { finalizeOrder } from '@/app/actions/shop';
+import { finalizeOrder } from '@/lib/orders';
 
 export async function POST(req) {
   let event

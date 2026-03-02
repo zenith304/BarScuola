@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { stripe } from "@/lib/stripe";
 import { rateLimit } from '@/lib/rateLimit';
 import { headers } from 'next/headers';
+import { z } from 'zod';
 
 // --- Types ---
 export type CartItem = {
@@ -64,15 +65,25 @@ export async function createOrder(input: CreateOrderInput) {
     }
 
     // --- Security: Input Validation ---
-    if (input.studentClass && input.studentClass.length > 20) {
-        return { error: 'Dati non validi.' };
+    const cartItemSchema = z.object({
+        productId: z.string().uuid(),
+        qty: z.number().int().min(1).max(100),
+        selectedOptions: z.string().optional()
+    });
+
+    const createOrderSchema = z.object({
+        studentName: z.string().max(100).optional(),
+        studentClass: z.string().min(1).max(20),
+        note: z.string().max(500).optional(),
+        pickupTime: z.string().regex(/^\d{2}:\d{2}$/, "Orario non valido").optional(),
+        cart: z.array(cartItemSchema).min(1).max(50)
+    });
+
+    const parsed = createOrderSchema.safeParse(input);
+    if (!parsed.success) {
+        return { error: 'Dati non validi: ' + parsed.error.issues[0].message };
     }
-    if (input.note && input.note.length > 500) {
-        return { error: 'La nota è troppo lunga (max 500 caratteri).' };
-    }
-    if (!input.cart || input.cart.length === 0 || input.cart.length > 50) {
-        return { error: 'Carrello non valido.' };
-    }
+    const validatedInput = parsed.data;
 
     // 1. Check Settings (Cutoff & Enabled)
     try {
@@ -108,11 +119,11 @@ export async function createOrder(input: CreateOrderInput) {
         }
 
         // Validate Pickup Time
-        if (!input.pickupTime) {
+        if (!validatedInput.pickupTime) {
             return { error: 'Orario di ritiro mancante.' };
         }
 
-        const [pickupHour, pickupMinute] = input.pickupTime.split(':').map(Number);
+        const [pickupHour, pickupMinute] = validatedInput.pickupTime.split(':').map(Number);
         const pickupTimeVal = pickupHour * 60 + pickupMinute;
 
         const [pickupStartHour, pickupStartMinute] = settings.pickupStartTime.split(':').map(Number);
@@ -129,7 +140,7 @@ export async function createOrder(input: CreateOrderInput) {
         let totalCents = 0;
         const orderItemsData: { productId: string; nameSnapshot: string; priceCentsSnapshot: number; qty: number; topicSnapshot?: string | null; selectedOptions?: string | null }[] = [];
 
-        for (const item of input.cart) {
+        for (const item of validatedInput.cart) {
             const product = await prisma.product.findUnique({ where: { id: item.productId } });
             if (!product) return { error: `Prodotto non trovato: ${item.productId}` };
             if (!product.isAvailable) return { error: `Prodotto non disponibile: ${product.name}` };
@@ -170,10 +181,10 @@ export async function createOrder(input: CreateOrderInput) {
         // 4. Create Order (Status: PENDING_PAYMENT)
         const order = await prisma.shopOrder.create({
             data: {
-                studentName: input.studentName || '',
-                studentClass: input.studentClass,
-                note: input.note,
-                pickupTime: input.pickupTime,
+                studentName: validatedInput.studentName || '',
+                studentClass: validatedInput.studentClass,
+                note: validatedInput.note,
+                pickupTime: validatedInput.pickupTime,
                 status: 'PENDING_PAYMENT',
                 pickupCode,
                 totalCents,
@@ -270,92 +281,7 @@ export async function getBestSellerProductId(): Promise<string | null> {
     return result[0]?.productId ?? null;
 }
 
-export async function finalizeOrder(orderId: string) {
-    try {
-        const order = await prisma.shopOrder.findUnique({
-            where: { id: orderId },
-            include: { items: true, printJob: true }
-        });
 
-        if (!order) return;
-
-        // If not already PAID, or if PrintJob is missing, we proceed
-        const needsUpdate = order.status !== 'PAID';
-        const needsPrintJob = !order.printJob;
-
-        if (!needsUpdate && !needsPrintJob) {
-            // Nothing to do
-            return;
-        }
-
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('it-IT', { timeZone: 'Europe/Rome', hour: '2-digit', minute: '2-digit' });
-
-        let printText = `ORDINE BAR\n${dateStr}\n\n`;
-        printText += `################################\n`;
-        printText += `#        CODICE RITIRO         #\n`;
-        printText += `#                              #\n`;
-        printText += `#             ${order.pickupCode}             #\n`;
-        printText += `#                              #\n`;
-        printText += `################################\n\n`;
-
-        if (order.pickupTime) {
-            printText += `ORARIO RITIRO: ${order.pickupTime}\n\n`;
-        } else {
-            printText += `\n`;
-        }
-        if (order.studentName) {
-            printText += `${order.studentName} (${order.studentClass})\n`;
-        } else {
-            printText += `${order.studentClass}\n`;
-        }
-        order.items.forEach((i) => {
-            let itemLine = `${i.qty} x ${i.nameSnapshot}`;
-            if (i.topicSnapshot) {
-                itemLine += ` [${i.topicSnapshot}]`;
-            }
-            if (i.selectedOptions) {
-                itemLine += `\n   + ${i.selectedOptions}`;
-            }
-            printText += `${itemLine}\n`;
-        });
-        if (order.note) printText += `NOTE: ${order.note}\n`;
-        printText += `\nTOTALE: ${(order.totalCents / 100).toFixed(2)}€\n`;
-        printText += `\n--------------------------------\n`;
-
-        await prisma.$transaction(async (tx) => {
-            if (needsUpdate) {
-                await tx.shopOrder.update({
-                    where: { id: orderId },
-                    data: { status: 'PAID' }
-                });
-                // Increment revenue only when converting to PAID
-                await tx.settings.update({
-                    where: { id: 1 },
-                    data: {
-                        lifetimeRevenueCents: { increment: order.totalCents },
-                        dailyRevenueCents: { increment: order.totalCents },
-                    }
-                });
-            }
-
-            if (needsPrintJob) {
-                await tx.printJob.create({
-                    data: {
-                        orderId: order.id,
-                        payloadText: printText,
-                        status: 'QUEUED'
-                    }
-                });
-            }
-        });
-
-        revalidatePath('/admin/dashboard');
-    } catch (error) {
-        console.error('Error finalizing order:', error);
-        // Don't throw to avoid crashing the webhook/page, just log
-    }
-}
 
 export async function retryPayment(orderId: string) {
     // 1. Fetch Order

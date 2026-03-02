@@ -4,10 +4,18 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { createAdminSession, deleteAdminSession, isAdminAuthenticated } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { rateLimit } from '@/lib/rateLimit';
+import { headers } from 'next/headers';
 import { hashPassword, verifyPassword } from '@/lib/auth';
 
 // --- Admin Auth ---
 export async function loginAdmin(formData: FormData) {
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    if (!rateLimit(ip, { maxRequests: 5, windowMs: 60_000 })) {
+        return { error: 'Troppi tentativi. Riprova tra un minuto.' };
+    }
+
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
 
@@ -404,7 +412,7 @@ export async function resetLifetimeRevenue() {
 
     await prisma.settings.update({
         where: { id: 1 },
-        data: { lifetimeRevenueCents: 0 }
+        data: { lifetimeRevenueCents: 0, dailyRevenueCents: 0 }
     });
 
     revalidatePath('/admin/dashboard');

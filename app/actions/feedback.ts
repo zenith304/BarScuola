@@ -3,8 +3,16 @@
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { rateLimit } from '@/lib/rateLimit';
+import { headers } from 'next/headers';
 
 export async function submitFeedback(formData: FormData) {
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    if (!rateLimit(ip, { maxRequests: 3, windowMs: 60_000 })) {
+        throw new Error('Troppi feedback inviati. Riprova più tardi.');
+    }
+
     const text = formData.get('text') as string;
 
     if (!text || text.trim().length === 0) {
