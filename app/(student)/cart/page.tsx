@@ -73,13 +73,9 @@ export default function CartPage() {
                 return;
             }
 
-            const { url, orderId } = res;
+            const { url } = res;
 
             clearCart();
-            // Store Order ID in local storage for "My Orders"
-            const savedOrders = JSON.parse(localStorage.getItem('bar-scuola-orders') || '[]');
-            savedOrders.push(orderId);
-            localStorage.setItem('bar-scuola-orders', JSON.stringify(savedOrders));
 
             // Redirect to Stripe Checkout
             if (url) {

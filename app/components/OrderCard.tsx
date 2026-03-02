@@ -3,15 +3,30 @@
 import { useOrderPolling } from '@/app/hooks/useOrderPolling';
 import { Card } from '@/app/components/ui/Card';
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface OrderCardProps {
     order: any;
-    onDelete: (orderId: string) => void;
 }
 
-export function OrderCard({ order, onDelete }: OrderCardProps) {
-    // Poll for status updates
+export function OrderCard({ order }: OrderCardProps) {
+    const router = useRouter();
     const status = useOrderPolling(order.id, order.status);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        try {
+            const { deleteOrder } = await import('@/app/actions/shop');
+            await deleteOrder(order.id);
+            router.refresh(); // Refresh the server component
+        } catch (e) {
+            console.error('Delete failed:', e);
+            alert('Errore nell\'eliminare l\'ordine');
+            setIsDeleting(false);
+        }
+    };
 
     return (
         <Card className="p-4 border-l-4 border-l-blue-500 animate-in fade-in zoom-in duration-300">
@@ -68,10 +83,11 @@ export function OrderCard({ order, onDelete }: OrderCardProps) {
 
                     {['PENDING_PAYMENT', 'DELIVERED'].includes(status) && (
                         <button
-                            onClick={() => onDelete(order.id)}
-                            className="block mt-2 text-sm text-red-600 hover:underline ml-auto"
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                            className="block mt-2 text-sm text-red-600 hover:underline ml-auto disabled:opacity-50"
                         >
-                            Elimina
+                            {isDeleting ? 'Eliminazione...' : 'Elimina'}
                         </button>
                     )}
                 </div>

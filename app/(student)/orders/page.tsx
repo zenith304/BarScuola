@@ -1,56 +1,16 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import { getOrdersByIds } from '@/app/actions/shop';
 import { Button } from '@/app/components/ui/Button';
 import { OrderCard } from '@/app/components/OrderCard';
 import Link from 'next/link';
+import { getStudentOrdersFromCookie } from '@/lib/guest';
 
-export default function MyOrdersPage() {
-    const [orders, setOrders] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+export default async function MyOrdersPage() {
+    const studentOrderIds = await getStudentOrdersFromCookie();
 
-    useEffect(() => {
-        const loadOrders = async () => {
-            const saved = localStorage.getItem('bar-scuola-orders');
-            if (saved) {
-                try {
-                    const ids = JSON.parse(saved);
-                    if (Array.isArray(ids) && ids.length > 0) {
-                        const data = await getOrdersByIds(ids);
-                        setOrders(data);
-                    }
-                } catch (e) {
-                    console.error('Failed to load orders', e);
-                }
-            }
-            setLoading(false);
-        };
-        loadOrders();
-    }, []);
-
-    const handleDelete = async (orderId: string) => {
-        try {
-            const { deleteOrder } = await import('@/app/actions/shop');
-            await deleteOrder(orderId);
-
-            // Update LocalStorage
-            const saved = localStorage.getItem('bar-scuola-orders');
-            if (saved) {
-                const ids = JSON.parse(saved);
-                const newIds = ids.filter((id: string) => id !== orderId);
-                localStorage.setItem('bar-scuola-orders', JSON.stringify(newIds));
-            }
-
-            // Update UI
-            setOrders(prev => prev.filter(o => o.id !== orderId));
-        } catch (e) {
-            console.error('Delete failed:', e);
-            alert('Errore nell\'eliminare l\'ordine');
-        }
-    };
-
-    if (loading) return <div className="text-center py-10 text-gray-900 dark:text-gray-100">Caricamento...</div>;
+    let orders: any[] = [];
+    if (studentOrderIds.length > 0) {
+        orders = await getOrdersByIds(studentOrderIds);
+    }
 
     if (orders.length === 0) {
         return (
@@ -69,7 +29,7 @@ export default function MyOrdersPage() {
             <h1 className="text-2xl font-bold text-foreground">I miei ordini recenti</h1>
 
             {orders.map((order) => (
-                <OrderCard key={order.id} order={order} onDelete={handleDelete} />
+                <OrderCard key={order.id} order={order} />
             ))}
         </div>
     );

@@ -7,6 +7,7 @@ import { stripe } from "@/lib/stripe";
 import { rateLimit } from '@/lib/rateLimit';
 import { headers } from 'next/headers';
 import { z } from 'zod';
+import { addStudentOrderToCookie } from '@/lib/guest';
 
 // --- Types ---
 export type CartItem = {
@@ -228,7 +229,9 @@ export async function createOrder(input: CreateOrderInput) {
             return { error: 'Errore nella creazione del pagamento Stripe.' };
         }
 
-        return { url: session.url, orderId: order.id };
+        // Store the order ID in the guest cookie
+        await addStudentOrderToCookie(order.id);
+
         return { url: session.url, orderId: order.id };
     } catch (error: any) {
         console.error('Error in createOrder:', error);
@@ -327,6 +330,8 @@ export async function retryPayment(orderId: string) {
     return session.url;
 }
 
+import { removeStudentOrderFromCookie } from '@/lib/guest';
+
 export async function deleteOrder(orderId: string) {
     // 1. Fetch Order to verify it exists and check status
     const order = await prisma.shopOrder.findUnique({
@@ -344,6 +349,9 @@ export async function deleteOrder(orderId: string) {
     await prisma.shopOrder.delete({
         where: { id: orderId }
     });
+
+    // Remove from student cookie
+    await removeStudentOrderFromCookie(orderId);
 
     revalidatePath('/orders');
     revalidatePath('/admin/dashboard');
