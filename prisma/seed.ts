@@ -8,19 +8,27 @@ const prisma = new PrismaClient({
 
 async function main() {
   // 1. Create Admin
-  const adminEmail = 'admin@schoolbar.local';
-  const password = 'Admin123!';
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@schoolbar.local';
+  let password = process.env.ADMIN_PASSWORD;
+
+  if (!password) {
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('⚠️ WARNING: ADMIN_PASSWORD is not set in production. Falling back to default insecure password.');
+    }
+    password = 'Admin123!';
+  }
+
   const passwordHash = await bcrypt.hash(password, 10);
 
   const admin = await prisma.adminUser.upsert({
     where: { email: adminEmail },
-    update: {},
+    update: { passwordHash }, // Allows changing password on re-seed
     create: {
       email: adminEmail,
       passwordHash,
     },
   });
-  console.log('Admin created:', admin.email);
+  console.log('Admin created/updated:', admin.email);
 
   // 2. Create Settings
   const settings = await prisma.settings.upsert({

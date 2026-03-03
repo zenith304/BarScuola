@@ -165,7 +165,9 @@ export async function createOrder(input: CreateOrderInput) {
         startOfDay.setHours(0, 0, 0, 0);
 
         while (!unique && attempts < 10) {
-            pickupCode = Math.floor(1000 + Math.random() * 9000).toString(); // 1000-9999
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Removed lookalike characters like I, 1, O, 0
+            pickupCode = Array.from({ length: 4 }).map(() => chars.charAt(Math.floor(Math.random() * chars.length))).join('');
+
             const existing = await prisma.shopOrder.findFirst({
                 where: {
                     pickupCode,
@@ -330,7 +332,7 @@ export async function retryPayment(orderId: string) {
     return session.url;
 }
 
-import { removeStudentOrderFromCookie } from '@/lib/guest';
+import { getStudentOrdersFromCookie, removeStudentOrderFromCookie } from '@/lib/guest';
 
 export async function deleteOrder(orderId: string) {
     // 1. Fetch Order to verify it exists and check status
@@ -339,6 +341,15 @@ export async function deleteOrder(orderId: string) {
     });
 
     if (!order) throw new Error('Ordine non trovato');
+
+    // 1.5 Verify Ownership / Authorization
+    const isAdmin = await import('@/lib/auth').then(res => res.isAdminAuthenticated());
+    if (!isAdmin) {
+        const studentOrders = await getStudentOrdersFromCookie();
+        if (!studentOrders.includes(orderId)) {
+            throw new Error('Non autorizzato a eliminare questo ordine');
+        }
+    }
 
     // 2. Only allow deletion of unpaid orders
     if (order.status === 'PAID') {
